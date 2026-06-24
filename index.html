@@ -283,9 +283,10 @@
   <section class="section" id="simulateur">
     <div class="section__head" data-reveal>
       <span class="kicker">03 — Outil interactif</span>
-      <h2>Simulateur de perte de charge</h2>
-      <p>Réglez les paramètres du circuit comme sur le banc réel. Les calculs (Darcy-Weisbach,
-         Reynolds, Blasius) et l'écoulement d'air se mettent à jour en temps réel.</p>
+      <h2>Simulateur du réseau — 3 circuits</h2>
+      <p>Le banc compte <strong>3 lignes parallèles</strong>, chacune avec sa vanne.
+         <strong>Fermez une vanne pour couper une ligne</strong> : le débit de la pompe se
+         redistribue sur les circuits restants et le ΔP change, exactement comme sur le banc réel.</p>
     </div>
 
     <div class="sim">
@@ -293,111 +294,111 @@
       <div class="sim__controls panel" data-reveal>
         <div class="ctrl">
           <div class="ctrl__label">
-            <span>Fréquence Altivar <span class="hint">(pilote la vitesse d'air)</span></span>
+            <span>Fréquence Altivar <span class="hint">(débit de la pompe)</span></span>
             <b><span id="vFreq">30</span> Hz</b>
           </div>
           <input type="range" id="freq" min="10" max="50" step="1" value="30" />
         </div>
 
         <div class="ctrl">
-          <div class="ctrl__label"><span>Vitesse d'air à 50 Hz (Ø50)</span><b><span id="vV50">10,0</span> m/s</b></div>
+          <div class="ctrl__label"><span>Vitesse de réf. à 50 Hz <span class="hint">(Ø50)</span></span><b><span id="vV50">10,0</span> m/s</b></div>
           <input type="range" id="v50" min="3" max="18" step="0.5" value="10" />
         </div>
 
-        <div class="ctrl ctrl--inline">
-          <label class="seg">
-            <span>Conduite étudiée</span>
-            <select id="diam">
-              <option value="D50">Ø50 mm</option>
-              <option value="D32">Ø32 mm</option>
-            </select>
-          </label>
-          <label class="seg">
-            <span>Longueur droite</span>
-            <select id="length">
-              <option value="6">6 m (Ø50)</option>
-              <option value="3">3 m (Ø32)</option>
-              <option value="1">1 m</option>
-              <option value="2">2 m</option>
-            </select>
-          </label>
+        <div class="ctrl__title">Les 3 vannes du banc</div>
+
+        <!-- Circuit 1 -->
+        <div class="circ" id="circ1">
+          <div class="circ__top">
+            <span class="circ__name">Ligne haute <i class="badge">Ø50</i></span>
+            <label class="switch" title="Ouvrir / couper le circuit">
+              <input type="checkbox" id="c1Open" checked />
+              <span class="switch__track"><span class="switch__thumb"></span></span>
+              <span class="switch__state" id="s1State">Ouverte</span>
+            </label>
+          </div>
+          <div class="circ__desc">Conduite principale 6 m · 2 coudes 90°</div>
+          <div class="ctrl ctrl--sub circ__valve">
+            <div class="ctrl__label"><span>Ouverture vanne</span><b><span id="v1Valve">100</span> %</b></div>
+            <input type="range" id="c1Valve" min="5" max="100" step="5" value="100" />
+          </div>
         </div>
 
-        <div class="ctrl__title">Singularités du circuit</div>
-
-        <label class="toggle">
-          <input type="checkbox" id="cElbow" checked />
-          <span>Coudes 90°</span>
-          <select id="elbowN" class="tiny">
-            <option>1</option><option selected>2</option><option>4</option><option>8</option>
-          </select>
-        </label>
-
-        <div class="ctrl ctrl--sub">
-          <div class="ctrl__label"><span>K d'un coude</span><b id="vKelbow">1,0</b></div>
-          <input type="range" id="elbowK" min="0.5" max="1.5" step="0.1" value="1.0" />
+        <!-- Circuit 2 -->
+        <div class="circ" id="circ2">
+          <div class="circ__top">
+            <span class="circ__name">Ligne milieu <i class="badge">Ø50</i></span>
+            <label class="switch" title="Ouvrir / couper le circuit">
+              <input type="checkbox" id="c2Open" checked />
+              <span class="switch__track"><span class="switch__thumb"></span></span>
+              <span class="switch__state" id="s2State">Ouverte</span>
+            </label>
+          </div>
+          <div class="circ__desc">Conduite 6 m · 1 coude · vanne boisseau</div>
+          <div class="ctrl ctrl--sub circ__valve">
+            <div class="ctrl__label"><span>Ouverture vanne</span><b><span id="v2Valve">100</span> %</b></div>
+            <input type="range" id="c2Valve" min="5" max="100" step="5" value="100" />
+          </div>
         </div>
 
-        <label class="toggle">
-          <input type="checkbox" id="cReduction" />
-          <span>Rétrécissement Ø50→Ø32 (K ≈ 0,5)</span>
-        </label>
-
-        <label class="toggle">
-          <input type="checkbox" id="cValve" checked />
-          <span>Vanne boisseau</span>
-        </label>
-        <div class="ctrl ctrl--sub">
-          <div class="ctrl__label"><span>Ouverture de la vanne</span><b><span id="vValve">100</span> %</b></div>
-          <input type="range" id="valveOpen" min="5" max="100" step="5" value="100" />
+        <!-- Circuit 3 -->
+        <div class="circ" id="circ3">
+          <div class="circ__top">
+            <span class="circ__name">Ligne basse <i class="badge badge--alt">Ø32</i></span>
+            <label class="switch" title="Ouvrir / couper le circuit">
+              <input type="checkbox" id="c3Open" checked />
+              <span class="switch__track"><span class="switch__thumb"></span></span>
+              <span class="switch__state" id="s3State">Ouverte</span>
+            </label>
+          </div>
+          <div class="circ__desc">Réduction Ø50→Ø32 · 3 m · vanne · Venturi</div>
+          <div class="ctrl ctrl--sub circ__valve">
+            <div class="ctrl__label"><span>Ouverture vanne</span><b><span id="v3Valve">100</span> %</b></div>
+            <input type="range" id="c3Valve" min="5" max="100" step="5" value="100" />
+          </div>
         </div>
-
-        <label class="toggle">
-          <input type="checkbox" id="cVenturi" />
-          <span>Tube Venturi (K ≈ 0,05)</span>
-        </label>
       </div>
 
       <!-- Résultats -->
       <div class="sim__results">
         <div class="kpis">
-          <div class="kpi" data-reveal><span>Vitesse d'air</span><b id="kV">—</b><i>m/s</i></div>
-          <div class="kpi" data-reveal data-reveal-delay="1"><span>Reynolds</span><b id="kRe">—</b><i id="kReg">—</i></div>
-          <div class="kpi" data-reveal data-reveal-delay="2"><span>λ frottement</span><b id="kLam">—</b><i id="kLamLaw">—</i></div>
-          <div class="kpi kpi--hl" data-reveal data-reveal-delay="3"><span>ΔP total</span><b id="kDp">—</b><i>Pa</i></div>
+          <div class="kpi kpi--hl" data-reveal><span>ΔP réseau</span><b id="kDp">—</b><i>Pa</i></div>
+          <div class="kpi" data-reveal data-reveal-delay="1"><span>Débit total</span><b id="kQtot">—</b><i>m³/h</i></div>
+          <div class="kpi" data-reveal data-reveal-delay="2"><span>Circuits actifs</span><b id="kOpen">—</b><i>/ 3 ouverts</i></div>
+          <div class="kpi" data-reveal data-reveal-delay="3"><span>Vitesse max</span><b id="kVmax">—</b><i>m/s</i></div>
         </div>
 
-        <!-- Visualisation d'écoulement -->
+        <!-- Visualisation d'écoulement multi-lignes -->
         <div class="panel panel--flow">
           <div class="panel__head">
-            <h4>🌬️ Écoulement d'air dans la conduite</h4>
-            <span class="muted">vitesse &amp; turbulence en direct</span>
+            <h4>🌬️ Écoulement dans les 3 lignes</h4>
+            <span class="muted">fermez une vanne → la ligne se coupe</span>
           </div>
-          <canvas id="flowCanvas" height="190"></canvas>
+          <canvas id="flowCanvas" height="250"></canvas>
         </div>
 
         <div class="panel">
           <div class="panel__head">
-            <h4>Répartition régulières / singulières</h4>
+            <h4>Répartition du débit par circuit</h4>
             <span id="dpSplit" class="muted">—</span>
           </div>
-          <canvas id="barCanvas" height="70"></canvas>
+          <canvas id="barCanvas" height="60"></canvas>
           <ul class="breakdown" id="breakdown"></ul>
         </div>
 
         <div class="panel">
           <div class="panel__head">
-            <h4>ΔP total en fonction de la fréquence Altivar</h4>
-            <span class="muted">ΔP ∝ V<sup>1,75</sup></span>
+            <h4>ΔP réseau en fonction de la fréquence</h4>
+            <span class="muted">selon les circuits ouverts</span>
           </div>
           <canvas id="curveCanvas" height="280"></canvas>
         </div>
 
         <div class="convert">
-          <div><span>ΔP</span><b id="cPa">— Pa</b></div>
+          <div><span>ΔP réseau</span><b id="cPa">— Pa</b></div>
           <div><span>≈</span><b id="cMmce">— mmCE</b></div>
           <div><span>≈</span><b id="cMbar">— mbar</b></div>
-          <div><span>Débit Q</span><b id="cQ">— m³/h</b></div>
+          <div><span>Débit total</span><b id="cQ">— m³/h</b></div>
         </div>
       </div>
     </div>
@@ -452,7 +453,7 @@
             <table class="rtable" id="rtable">
               <thead>
                 <tr>
-                  <th>f (Hz)</th><th>V (m/s)</th><th>Re</th>
+                  <th>f (Hz)</th><th>Q (m³/h)</th><th>Circuits</th>
                   <th>Relevé 1</th><th>Relevé 2</th><th>Relevé 3</th>
                   <th>ΔP moy. (Pa)</th><th>ΔP théo. (Pa)</th><th>Écart</th>
                 </tr>

@@ -37,98 +37,110 @@
   }
   ["rxV", "rxD"].forEach(id => $(id).addEventListener("input", updateReynoldsMini));
 
-  /* ====================== SIMULATEUR ====================== */
-  // Lit la configuration courante depuis les contrôles
+  /* ====================== SIMULATEUR — RÉSEAU 3 CIRCUITS ================ */
+  // Propriétés fixes des 3 lignes du banc (l'utilisateur ne règle que la vanne)
+  const CIRCUITS = [
+    { id: 1, name: "Ligne haute",  diameter: "D50", length: 6, elbows: 2, elbowK: 1.0, reduction: false, venturi: false, color: "#2dd4bf" },
+    { id: 2, name: "Ligne milieu", diameter: "D50", length: 6, elbows: 1, elbowK: 1.0, reduction: false, venturi: false, color: "#38bdf8" },
+    { id: 3, name: "Ligne basse",  diameter: "D32", length: 3, elbows: 1, elbowK: 1.0, reduction: true,  venturi: true,  color: "#818cf8" },
+  ];
+
+  // Lit la configuration courante (réseau) depuis les contrôles
   function readConfig() {
     return {
       freq: parseFloat($("freq").value),
-      vAt50: parseFloat($("v50").value),
-      diameter: $("diam").value,
-      length: parseFloat($("length").value),
-      elbows: $("cElbow").checked ? parseInt($("elbowN").value, 10) : 0,
-      elbowK: parseFloat($("elbowK").value),
-      reduction: $("cReduction").checked,
-      valve: $("cValve").checked,
-      valveOpen: parseInt($("valveOpen").value, 10),
-      venturi: $("cVenturi").checked,
+      vRef50: parseFloat($("v50").value),
+      circuits: CIRCUITS.map(c => ({
+        ...c,
+        open: $("c" + c.id + "Open").checked,
+        valveOpen: parseInt($("c" + c.id + "Valve").value, 10),
+      })),
     };
   }
 
   function updateSim() {
-    // étiquettes live des sliders
+    // étiquettes & état visuel des contrôles
     $("vFreq").textContent = $("freq").value;
     $("vV50").textContent = fmt(parseFloat($("v50").value), 1);
-    $("vKelbow").textContent = fmt(parseFloat($("elbowK").value), 1);
-    $("vValve").textContent = $("valveOpen").value;
+    CIRCUITS.forEach(c => {
+      const open = $("c" + c.id + "Open").checked;
+      $("v" + c.id + "Valve").textContent = $("c" + c.id + "Valve").value;
+      $("s" + c.id + "State").textContent = open ? "Ouverte" : "Coupée";
+      $("circ" + c.id).classList.toggle("circ--closed", !open);
+      $("c" + c.id + "Valve").disabled = !open;
+    });
 
     const cfg = readConfig();
-    const r = Physics.computeCircuit(cfg);
+    const r = Physics.computeNetwork(cfg);
 
     // KPI
-    $("kV").textContent = fmt(r.V, 1);
-    $("kRe").textContent = fmt(r.Re, 0);
-    const reg = $("kReg");
-    reg.textContent = r.regime.label;
-    reg.style.color = r.regime.color;
-    $("kLam").textContent = fmt(r.lambda, 4);
-    $("kLamLaw").textContent = r.lambdaLaw;
-    $("kDp").textContent = fmt(r.dpTotal, 1);
+    $("kDp").textContent = r.allClosed ? "—" : fmt(r.dP, 1);
+    $("kQtot").textContent = fmt(r.Qtot * 3600, 0);
+    $("kOpen").textContent = r.openCount;
+    const vmax = Math.max(0, ...r.circuits.map(c => c.V));
+    $("kVmax").textContent = fmt(vmax, 1);
 
     // conversions
-    $("cPa").textContent = fmt(r.dpTotal, 1) + " Pa";
-    $("cMmce").textContent = fmt(r.dpTotal_mmCE, 1) + " mmCE";
-    $("cMbar").textContent = fmt(r.dpTotal_mbar, 2) + " mbar";
-    $("cQ").textContent = fmt(r.Q * 3600, 0) + " m³/h";
+    $("cPa").textContent = r.allClosed ? "— Pa" : fmt(r.dP, 1) + " Pa";
+    $("cMmce").textContent = r.allClosed ? "—" : fmt(r.dP_mmCE, 1) + " mmCE";
+    $("cMbar").textContent = r.allClosed ? "—" : fmt(r.dP_mbar, 2) + " mbar";
+    $("cQ").textContent = fmt(r.Qtot * 3600, 0) + " m³/h";
 
-    // barre empilée
-    Charts.plotStackedBar($("barCanvas"), [
-      { label: "Régulières", value: r.dpRegular, color: COLOR_REG },
-      { label: "Singulières", value: r.dpSingular, color: COLOR_SING },
-    ]);
-    const totalNZ = r.dpTotal || 1;
-    $("dpSplit").innerHTML =
-      `Régulières <b style="color:${COLOR_REG}">${fmt(r.dpRegular,1)} Pa</b> · ` +
-      `Singulières <b style="color:${COLOR_SING}">${fmt(r.dpSingular,1)} Pa</b>`;
+    // barre de répartition du débit entre circuits ouverts
+    const parts = r.circuits.filter(c => c.open && c.Q > 0).map(c => ({ label: c.name, value: c.Q, color: c.color }));
+    Charts.plotStackedBar($("barCanvas"), parts.length ? parts : [{ label: "—", value: 1, color: "#334155" }]);
 
-    // détail des pertes
+    $("dpSplit").innerHTML = r.allClosed
+      ? `<b style="color:#ff5c7a">⚠ Tous les circuits sont coupés — pas d'écoulement</b>`
+      : `ΔP commun aux lignes ouvertes : <b style="color:#2dd4bf">${fmt(r.dP, 1)} Pa</b>`;
+
+    // détail par circuit
     const bd = $("breakdown");
     bd.innerHTML = "";
-    const addRow = (name, color, dp) => {
+    r.circuits.forEach(c => {
       const li = document.createElement("li");
-      li.innerHTML = `<span><i class="dot" style="background:${color}"></i>${name}</span>` +
-                     `<b>${fmt(dp,2)} Pa · ${fmt(dp/totalNZ*100,0)}%</b>`;
+      const diam = c.diameter === "D50" ? "Ø50" : "Ø32";
+      if (c.open) {
+        li.innerHTML = `<span><i class="dot" style="background:${c.color}"></i>${c.name} (${diam})</span>` +
+          `<b>${fmt(c.V, 1)} m/s · Re ${fmt(c.Re, 0)} · ${fmt(c.share * 100, 0)}% du débit</b>`;
+      } else {
+        li.style.opacity = ".55";
+        li.innerHTML = `<span><i class="dot" style="background:#475569"></i>${c.name} (${diam})</span>` +
+          `<b style="color:#ff5c7a">✕ coupée</b>`;
+      }
       bd.appendChild(li);
-    };
-    addRow(`Conduite droite ${cfg.diameter==="D50"?"Ø50":"Ø32"} (${cfg.length} m)`, COLOR_REG, r.dpRegular);
-    r.singular.forEach(s => addRow(`${s.name} — K=${fmt(s.K,2)}`, COLOR_SING, s.dp));
+    });
 
-    // courbe ΔP = f(fréquence)
+    // courbe ΔP réseau = f(fréquence)
     drawSimCurve(cfg, r);
 
-    // visualisation d'écoulement d'air
-    const dpRatio = 1 - 1 / (1 + r.dpTotal / 200); // 0..1 (lissé)
+    // visualisation d'écoulement (3 lignes)
+    const dpRatio = 1 - 1 / (1 + r.dP / 200);
     Flow.update({
-      V: r.V, regime: r.regime.code, dpRatio,
-      reduction: cfg.reduction, valve: cfg.valve, valveOpen: cfg.valveOpen,
+      dpRatio,
+      lanes: r.circuits.map(c => ({
+        open: c.open, V: c.V, diameter: c.diameter,
+        valveOpen: c.valveOpen, regime: (c.regime && c.regime.code) || "turbulent",
+        name: c.name,
+      })),
     });
   }
 
   function drawSimCurve(cfg, current) {
-    const pts = Physics.sweep(cfg, 10, 50, 2);
+    const pts = Physics.sweepNetwork(cfg, 10, 50, 2);
     const series = [
-      { type: "line", color: COLOR_THEO, area: true, label: "ΔP total", data: pts.map(p => ({ x: p.freq, y: p.dpTotal })) },
-      { type: "line", color: COLOR_SING, dash: [5,4], label: "dont singulières", data: pts.map(p => ({ x: p.freq, y: p.dpSingular })) },
-      { type: "scatter", color: "#fff", ring: true, data: [{ x: cfg.freq, y: current.dpTotal }] },
+      { type: "line", color: COLOR_THEO, area: true, label: "ΔP réseau", data: pts.map(p => ({ x: p.freq, y: p.dP })) },
+      { type: "scatter", color: "#fff", ring: true, data: current.allClosed ? [] : [{ x: cfg.freq, y: current.dP }] },
     ];
     Charts.plotXY($("curveCanvas"), {
-      series, xLabel: "Fréquence Altivar (Hz)", yLabel: "ΔP (Pa)",
+      series, xLabel: "Fréquence Altivar (Hz)", yLabel: "ΔP réseau (Pa)",
       xMin: 10, xMax: 50,
     });
   }
 
-  // écoute de tous les contrôles du simulateur
-  ["freq","v50","diam","length","cElbow","elbowN","elbowK","cReduction",
-   "cValve","valveOpen","cVenturi"].forEach(id => {
+  // écoute des contrôles du simulateur
+  ["freq", "v50",
+   "c1Open", "c1Valve", "c2Open", "c2Valve", "c3Open", "c3Valve"].forEach(id => {
     const el = $(id);
     el.addEventListener("input", updateSim);
     el.addEventListener("change", updateSim);
@@ -149,17 +161,17 @@
     const cfg = readConfig();
     const step = parseFloat($("step").value);
     const noiseAmp = parseFloat($("noise").value);
-    const pts = Physics.sweep(cfg, 10, 50, step);
+    const pts = Physics.sweepNetwork(cfg, 10, 50, step);
 
     const rows = pts.map(p => {
-      // 3 relevés bruités autour de la valeur théorique
+      // 3 relevés bruités autour de la valeur théorique (ΔP réseau)
       const reads = [0, 1, 2].map(() => {
         const noise = 1 + (noiseAmp ? gaussNoise() * noiseAmp : 0);
-        return Math.max(0, p.dpTotal * noise);
+        return Math.max(0, p.dP * noise);
       });
       const moy = (reads[0] + reads[1] + reads[2]) / 3;
-      const ecart = p.dpTotal > 0 ? (moy - p.dpTotal) / p.dpTotal * 100 : 0;
-      return { ...p, reads, moy, ecart };
+      const ecart = p.dP > 0 ? (moy - p.dP) / p.dP * 100 : 0;
+      return { freq: p.freq, Qtot: p.Qtot, openCount: p.openCount, dP: p.dP, reads, moy, ecart };
     });
 
     lastEssai = { cfg, rows };
@@ -168,12 +180,12 @@
 
     // verdict
     const meanAbs = rows.reduce((s, r) => s + Math.abs(r.ecart), 0) / rows.length;
-    const reg = Physics.regime(rows[rows.length - 1].Re);
-    $("essaiRegime").textContent = `Régime à 50 Hz : ${reg.label}`;
+    const openCount = cfg.circuits.filter(c => c.open).length;
+    $("essaiRegime").textContent = `${openCount} circuit(s) ouvert(s) sur 3`;
     const v = $("verdict");
     v.classList.add("show");
     v.innerHTML =
-      `Essai terminé : <b>${rows.length} paliers</b>, ${rows.length * 3} relevés. ` +
+      `Essai terminé : <b>${rows.length} paliers</b>, ${rows.length * 3} relevés, <b>${openCount} ligne(s)</b> en service. ` +
       `Écart moyen mesuré/théorique : <b>${fmt(meanAbs,1)} %</b>. ` +
       (meanAbs < 8
         ? `✅ Corrélation conforme à l'objectif du projet (&lt; 8 %).`
@@ -196,13 +208,13 @@
       const tr = document.createElement("tr");
       tr.innerHTML =
         `<td>${r.freq}</td>` +
-        `<td>${fmt(r.V,1)}</td>` +
-        `<td>${fmt(r.Re,0)}</td>` +
+        `<td>${fmt(r.Qtot * 3600, 0)}</td>` +
+        `<td>${r.openCount}</td>` +
         `<td>${fmt(r.reads[0],1)}</td>` +
         `<td>${fmt(r.reads[1],1)}</td>` +
         `<td>${fmt(r.reads[2],1)}</td>` +
         `<td>${fmt(r.moy,1)}</td>` +
-        `<td>${fmt(r.dpTotal,1)}</td>` +
+        `<td>${fmt(r.dP,1)}</td>` +
         `<td class="${ecartClass(r.ecart)}">${r.ecart >= 0 ? "+" : ""}${fmt(r.ecart,1)} %</td>`;
       tb.appendChild(tr);
     });
@@ -210,8 +222,8 @@
 
   function drawEssaiChart(rows) {
     const series = [
-      { type: "line", color: COLOR_THEO, area: true, label: "ΔP théorique (Darcy-Weisbach)",
-        data: rows.map(r => ({ x: r.freq, y: r.dpTotal })) },
+      { type: "line", color: COLOR_THEO, area: true, label: "ΔP réseau théorique",
+        data: rows.map(r => ({ x: r.freq, y: r.dP })) },
       { type: "scatter", color: COLOR_MEAS, ring: true, label: "ΔP mesuré (moyenne)",
         data: rows.map(r => ({ x: r.freq, y: r.moy })) },
     ];
@@ -224,14 +236,16 @@
   function exportCsv() {
     if (!lastEssai) return;
     const { cfg, rows } = lastEssai;
-    let csv = "Banc a Perte de Charge - Essai virtuel\n";
-    csv += `Conduite;${cfg.diameter};Longueur;${cfg.length} m;Vitesse a 50Hz;${cfg.vAt50} m/s\n`;
-    csv += `Coudes;${cfg.elbows};K coude;${cfg.elbowK};Vanne;${cfg.valve?cfg.valveOpen+"%":"non"};Reduction;${cfg.reduction?"oui":"non"};Venturi;${cfg.venturi?"oui":"non"}\n\n`;
-    csv += "Frequence (Hz);Vitesse (m/s);Reynolds;Releve 1 (Pa);Releve 2 (Pa);Releve 3 (Pa);Moyenne (Pa);Theorique (Pa);Ecart (%)\n";
+    let csv = "Banc a Perte de Charge - Essai virtuel (reseau 3 circuits)\n";
+    csv += `Vitesse ref a 50Hz;${cfg.vRef50} m/s\n`;
+    cfg.circuits.forEach(c => {
+      csv += `${c.name};${c.diameter};${c.open ? "OUVERTE " + c.valveOpen + "%" : "COUPEE"}\n`;
+    });
+    csv += "\nFrequence (Hz);Debit total (m3/h);Circuits ouverts;Releve 1 (Pa);Releve 2 (Pa);Releve 3 (Pa);Moyenne (Pa);Theorique (Pa);Ecart (%)\n";
     rows.forEach(r => {
-      csv += [r.freq, fmt(r.V,2), fmt(r.Re,0),
+      csv += [r.freq, fmt(r.Qtot * 3600, 0), r.openCount,
         fmt(r.reads[0],2), fmt(r.reads[1],2), fmt(r.reads[2],2),
-        fmt(r.moy,2), fmt(r.dpTotal,2), fmt(r.ecart,1)]
+        fmt(r.moy,2), fmt(r.dP,2), fmt(r.ecart,1)]
         .join(";").replace(/ /g, "") + "\n";
     });
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });

@@ -1,12 +1,10 @@
 /* =========================================================================
-   flow.js — Visualisation animée de l'écoulement d'air dans la conduite
+   flow.js — Visualisation animée de l'écoulement dans les 3 lignes du banc
    -------------------------------------------------------------------------
-   Dessine un tuyau avec des particules d'air dont :
-     • la vitesse est proportionnelle à la vitesse calculée V (m/s)
-     • le désordre (turbulence) dépend du régime (laminaire/turbulent)
-     • la couleur traduit l'intensité du ΔP (vert -> rouge)
-   La conduite se rétrécit si une réduction Ø50→Ø32 est active, et présente
-   un étranglement à l'emplacement de la vanne selon son ouverture.
+   Chaque ligne est dessinée comme un tuyau horizontal :
+     • ouverte  : particules d'air dont la vitesse ∝ V, turbulence ∝ régime,
+                  couleur ∝ intensité du ΔP ; vanne (poignée) ouverte.
+     • coupée   : tuyau grisé, vanne fermée (croix rouge), aucune particule.
    ========================================================================= */
 
 const Flow = (() => {
@@ -14,22 +12,16 @@ const Flow = (() => {
 
   let canvas, ctx, dpr = 1;
   let W = 0, H = 0;
-  let particles = [];
   let raf = null;
-  let state = {
-    V: 4, regime: "turbulent", dpRatio: 0.2,
-    reduction: false, valveOpen: 100, valve: true,
-  };
-
-  const N = 90; // nombre de particules
+  // état : { lanes:[{open,V,diameter,valveOpen,regime,name}], dpRatio }
+  let state = { lanes: [], dpRatio: 0.2 };
+  let particles = [];   // par ligne : tableau de particules
 
   function init(canvasEl) {
     canvas = canvasEl;
     ctx = canvas.getContext("2d");
     resize();
-    seed();
     if (!raf) loop();
-    // pause quand l'onglet est caché (économie)
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) { cancelAnimationFrame(raf); raf = null; }
       else if (!raf) loop();
@@ -41,47 +33,34 @@ const Flow = (() => {
     dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
     W = rect.width || 600;
-    H = rect.height || 200;
+    H = rect.height || 250;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function seed() {
-    particles = [];
-    for (let i = 0; i < N; i++) particles.push(makeParticle(Math.random() * W));
-  }
-
   function makeParticle(x) {
     return {
       x,
-      lane: Math.random(),          // position verticale relative (0..1)
+      lane: Math.random(),
       phase: Math.random() * Math.PI * 2,
-      len: 8 + Math.random() * 16,  // longueur de la traînée
+      len: 7 + Math.random() * 14,
       speedJitter: 0.7 + Math.random() * 0.6,
     };
   }
 
-  // Géométrie du tuyau à une abscisse x (centre + demi-hauteur)
-  function pipeAt(x) {
-    const cy = H / 2;
-    const baseR = H * 0.30;          // demi-hauteur Ø50
-    const t = x / W;
-    let r = baseR;
+  function ensureParticles(nLanes) {
+    while (particles.length < nLanes) {
+      const arr = [];
+      for (let i = 0; i < 26; i++) arr.push(makeParticle(Math.random() * (W || 600)));
+      particles.push(arr);
+    }
+    particles.length = nLanes;
+  }
 
-    // rétrécissement progressif Ø50 -> Ø32 au milieu du tuyau
-    if (state.reduction) {
-      const smallR = baseR * (32 / 50);
-      const s = smoothstep(0.42, 0.58, t);
-      r = baseR + (smallR - baseR) * s;
-    }
-    // étranglement local de la vanne (vers 72% de la longueur)
-    if (state.valve && state.valveOpen < 100) {
-      const close = 1 - state.valveOpen / 100;           // 0 ouverte -> 1 fermée
-      const g = Math.exp(-Math.pow((t - 0.72) / 0.05, 2)); // gaussienne
-      r *= 1 - close * 0.78 * g;
-    }
-    return { cy, r };
+  function update(newState) {
+    state = { ...state, ...newState };
+    ensureParticles(state.lanes.length);
   }
 
   function smoothstep(a, b, x) {
@@ -90,7 +69,6 @@ const Flow = (() => {
   }
 
   function dpColor(ratio) {
-    // 0 -> teal, 0.5 -> orange, 1 -> rouge
     const stops = [
       { p: 0,   c: [45, 212, 191] },
       { p: 0.5, c: [255, 180, 84] },
@@ -105,104 +83,115 @@ const Flow = (() => {
     return a.c.map((v, i) => Math.round(v + (b.c[i] - v) * t));
   }
 
-  function update(newState) {
-    state = { ...state, ...newState };
-  }
-
   function loop() {
     raf = requestAnimationFrame(loop);
     if (!ctx) return;
     ctx.clearRect(0, 0, W, H);
 
-    drawPipe();
-
-    // facteur de vitesse d'animation (px/frame) à partir de V (m/s)
-    const baseSpeed = 0.6 + state.V * 0.7;
-    const turb = state.regime === "laminaire" ? 0.06
-               : state.regime === "transitoire" ? 0.35 : 1;
+    const lanes = state.lanes;
+    const n = lanes.length || 1;
+    const bandH = H / n;
     const [cr, cg, cb] = dpColor(state.dpRatio);
 
-    particles.forEach(p => {
-      const geo = pipeAt(p.x);
-      // accélération dans les zones étroites (conservation du débit)
-      const baseR = H * 0.30;
-      const accel = baseR / Math.max(geo.r, 1);
-      p.x += baseSpeed * p.speedJitter * accel;
+    lanes.forEach((lane, li) => {
+      const cy = bandH * li + bandH / 2;
+      // demi-hauteur du tuyau selon le diamètre
+      const r = (lane.diameter === "D32" ? 0.20 : 0.30) * bandH;
+      drawPipe(cy, r, lane.open);
+      drawValve(W * 0.72, cy, r, lane);
+      drawLaneLabel(cy, r, lane);
 
-      if (p.x > W + 20) { Object.assign(p, makeParticle(-10)); }
+      if (!lane.open || lane.V <= 0) return;
 
-      // position verticale dans le tuyau + ondulation turbulente
-      p.phase += 0.15 * turb;
-      const wobble = Math.sin(p.phase) * geo.r * 0.5 * turb;
-      const y = geo.cy + (p.lane - 0.5) * 2 * (geo.r * 0.8) + wobble;
+      const baseSpeed = 0.6 + lane.V * 0.7;
+      const turb = lane.regime === "laminaire" ? 0.06
+                 : lane.regime === "transitoire" ? 0.35 : 1;
 
-      // traînée
-      ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.85)`;
-      ctx.lineWidth = 2;
-      ctx.lineCap = "round";
-      ctx.shadowColor = `rgba(${cr},${cg},${cb},0.9)`;
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.moveTo(p.x - p.len * accel, y);
-      ctx.lineTo(p.x, y);
-      ctx.stroke();
+      particles[li].forEach(p => {
+        p.x += baseSpeed * p.speedJitter;
+        if (p.x > W + 20) Object.assign(p, makeParticle(-10));
+        p.phase += 0.15 * turb;
+        const wobble = Math.sin(p.phase) * r * 0.5 * turb;
+        const y = cy + (p.lane - 0.5) * 2 * (r * 0.8) + wobble;
+
+        ctx.strokeStyle = `rgba(${cr},${cg},${cb},0.9)`;
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.shadowColor = `rgba(${cr},${cg},${cb},0.9)`;
+        ctx.shadowBlur = 7;
+        ctx.beginPath();
+        ctx.moveTo(p.x - p.len, y);
+        ctx.lineTo(p.x, y);
+        ctx.stroke();
+      });
+      ctx.shadowBlur = 0;
     });
-    ctx.shadowBlur = 0;
-
-    drawLabels();
   }
 
-  function drawPipe() {
-    // paroi du tuyau (haut + bas) avec léger remplissage
-    const steps = 60;
+  function drawPipe(cy, r, open) {
     ctx.save();
     // remplissage intérieur
-    ctx.beginPath();
-    for (let i = 0; i <= steps; i++) {
-      const x = (W * i) / steps;
-      const g = pipeAt(x);
-      if (i === 0) ctx.moveTo(x, g.cy - g.r); else ctx.lineTo(x, g.cy - g.r);
+    const grad = ctx.createLinearGradient(0, cy - r, 0, cy + r);
+    if (open) {
+      grad.addColorStop(0, "rgba(56,189,248,0.06)");
+      grad.addColorStop(0.5, "rgba(45,212,191,0.12)");
+      grad.addColorStop(1, "rgba(56,189,248,0.06)");
+    } else {
+      grad.addColorStop(0, "rgba(120,140,160,0.05)");
+      grad.addColorStop(1, "rgba(120,140,160,0.05)");
     }
-    for (let i = steps; i >= 0; i--) {
-      const x = (W * i) / steps;
-      const g = pipeAt(x);
-      ctx.lineTo(x, g.cy + g.r);
-    }
-    ctx.closePath();
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    grad.addColorStop(0, "rgba(56,189,248,0.05)");
-    grad.addColorStop(0.5, "rgba(45,212,191,0.10)");
-    grad.addColorStop(1, "rgba(56,189,248,0.05)");
     ctx.fillStyle = grad;
-    ctx.fill();
-
+    ctx.fillRect(0, cy - r, W, 2 * r);
     // parois
-    ctx.strokeStyle = "rgba(125,211,252,0.55)";
+    ctx.strokeStyle = open ? "rgba(125,211,252,0.55)" : "rgba(140,160,180,0.3)";
     ctx.lineWidth = 2.5;
-    for (const sign of [-1, 1]) {
-      ctx.beginPath();
-      for (let i = 0; i <= steps; i++) {
-        const x = (W * i) / steps;
-        const g = pipeAt(x);
-        const y = g.cy + sign * g.r;
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    }
+    ctx.beginPath(); ctx.moveTo(0, cy - r); ctx.lineTo(W, cy - r); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, cy + r); ctx.lineTo(W, cy + r); ctx.stroke();
     ctx.restore();
   }
 
-  function drawLabels() {
-    ctx.font = "600 12px 'JetBrains Mono', monospace";
-    ctx.fillStyle = "rgba(226,238,245,0.85)";
+  // Vanne boisseau : poignée rouge. Ouverte = alignée au tuyau ; fermée = en croix.
+  function drawValve(x, cy, r, lane) {
+    ctx.save();
+    const closed = !lane.open;
+    // corps de la vanne
+    ctx.fillStyle = "rgba(14,22,34,0.95)";
+    ctx.strokeStyle = closed ? "#ff5c7a" : "#2dd4bf";
+    ctx.lineWidth = 2;
+    const s = r * 0.9;
+    roundRect(x - s, cy - s, 2 * s, 2 * s, 4);
+    ctx.fill(); ctx.stroke();
+    // poignée
+    ctx.strokeStyle = "#ff5c7a";
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    if (closed) {            // poignée verticale = fermé
+      ctx.moveTo(x, cy - s * 1.5); ctx.lineTo(x, cy + s * 1.5);
+    } else {                 // poignée horizontale = ouvert
+      ctx.moveTo(x - s * 1.5, cy); ctx.lineTo(x + s * 1.5, cy);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function roundRect(x, y, w, h, rad) {
+    ctx.beginPath();
+    ctx.moveTo(x + rad, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rad);
+    ctx.arcTo(x + w, y + h, x, y + h, rad);
+    ctx.arcTo(x, y + h, x, y, rad);
+    ctx.arcTo(x, y, x + w, y, rad);
+    ctx.closePath();
+  }
+
+  function drawLaneLabel(cy, r, lane) {
+    ctx.font = "600 11px 'JetBrains Mono', monospace";
+    ctx.textBaseline = "middle";
     ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.fillText(`V = ${state.V.toFixed(1)} m/s`, 12, 10);
-    const labels = { laminaire: "Laminaire", transitoire: "Transitoire", turbulent: "Turbulent" };
-    const cols = { laminaire: "#3fb6ff", transitoire: "#ffb454", turbulent: "#ff5c7a" };
-    ctx.textAlign = "right";
-    ctx.fillStyle = cols[state.regime] || "#fff";
-    ctx.fillText(labels[state.regime] || "", W - 12, 10);
+    ctx.fillStyle = lane.open ? "rgba(226,238,245,0.85)" : "rgba(255,92,122,0.9)";
+    const txt = lane.open ? `${lane.name}  ${lane.V.toFixed(1)} m/s` : `${lane.name}  — COUPÉE`;
+    ctx.fillText(txt, 10, cy - r - 9);
   }
 
   return { init, update, resize };

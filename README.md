@@ -14,9 +14,12 @@ propres essais** directement dans le navigateur.
 - **Composants** : présentation des éléments PVC, instrumentation et points de mesure (P1–P10),
   + une **galerie de photos du banc réel** (vue d'ensemble, coude, prise de pression, réduction,
   pompe Becker) avec visionneuse plein écran (lightbox, navigation clavier).
-- **Simulateur interactif** : réglez la fréquence Altivar, le diamètre, les singularités
-  (coudes, vanne à ouverture variable, réduction Ø50→Ø32, Venturi…) et visualisez en temps réel
-  la vitesse, le Reynolds, λ, le ΔP total, sa répartition et la courbe ΔP = f(fréquence).
+- **Simulateur du réseau (3 circuits en parallèle)** : le banc réel comporte 3 lignes,
+  chacune avec sa vanne. **On peut couper une ligne en fermant sa vanne** : le débit de la
+  pompe se redistribue sur les circuits restants et le ΔP change (résolution d'un réseau
+  parallèle où ΔP est commun à toutes les branches ouvertes). On règle aussi l'ouverture de
+  chaque vanne, et on visualise en temps réel l'écoulement dans les 3 lignes (les lignes
+  coupées n'ont plus de débit), la répartition du débit et la courbe ΔP réseau = f(fréquence).
 - **Banc d'essai virtuel** : reproduit le protocole expérimental (balayage de fréquence,
   3 relevés par palier avec bruit de mesure réaliste), tableau de résultats, courbe
   *mesuré vs théorique*, calcul de l'écart et **export CSV**.

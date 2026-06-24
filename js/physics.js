@@ -231,6 +231,90 @@ const Physics = (() => {
     return points;
   }
 
+  /* ====================== RÉSEAU À CIRCUITS PARALLÈLES =================== */
+  /* Le banc comporte 3 lignes parallèles, chacune équipée d'une vanne.
+     Fermer une vanne « coupe » le circuit : plus aucun débit n'y passe.
+     La pompe (à palettes Becker, débit ~ proportionnel à la fréquence) impose
+     un débit total Q_total ; celui-ci se répartit entre les circuits OUVERTS
+     de sorte que la perte de charge ΔP soit IDENTIQUE sur chaque branche
+     parallèle. On résout ΔP = R_i · Q_i²  avec  Σ Q_i = Q_total.
+
+     cfg = {
+       freq      : fréquence Altivar (Hz)
+       vRef50    : vitesse de référence à 50 Hz dans un Ø50 (fixe le débit total)
+       circuits  : [ { id, name, diameter:"D50"|"D32", length,
+                       elbows, elbowK, reduction, venturi,
+                       open (bool), valveOpen (%) } ]
+     }
+  */
+  function computeNetwork(cfg) {
+    const rho = cfg.rho ?? RHO_AIR;
+    const nu = cfg.nu ?? NU_AIR;
+
+    // Débit total imposé par la pompe (∝ fréquence)
+    const Qtot = cfg.vRef50 * area(DIAMETERS.D50) * (cfg.freq / 50); // m³/s
+
+    const circuits = cfg.circuits.map(c => ({ ...c, D: DIAMETERS[c.diameter] }));
+    circuits.forEach(c => { c.A = area(c.D); c.V = 5; c.Q = 0; c.Re = 0; c.share = 0; c.dp = 0; });
+
+    const open = circuits.filter(c => c.open);
+    let dP = 0;
+
+    if (open.length > 0 && Qtot > 0) {
+      // résolution itérative (λ dépend de la vitesse)
+      for (let iter = 0; iter < 6; iter++) {
+        open.forEach(c => {
+          const Re = reynolds(c.V, c.D, nu);
+          const fr = frictionFactor(Re, c.D);
+          const Kreg = fr.lambda * (c.length / c.D);          // pertes régulières en K équivalent
+          let Ksing = 0;
+          if (c.elbows) Ksing += c.elbowK * c.elbows;
+          if (c.reduction) Ksing += suddenContractionK();
+          if (c.venturi) Ksing += 0.05;
+          Ksing += valveK(c.valveOpen);                        // la vanne (ouverte) ajoute toujours du K
+          c.Ktot = Kreg + Ksing;
+          c.lambda = fr.lambda;
+          c.R = (c.Ktot * rho / 2) / (c.A * c.A);              // ΔP = R · Q²
+        });
+        const sumInv = open.reduce((s, c) => s + 1 / Math.sqrt(c.R), 0);
+        dP = Math.pow(Qtot / sumInv, 2);
+        open.forEach(c => { c.Q = Math.sqrt(dP / c.R); c.V = c.Q / c.A; });
+      }
+    }
+
+    // finalisation par circuit
+    circuits.forEach(c => {
+      if (c.open && Qtot > 0) {
+        c.Re = reynolds(c.V, c.D, nu);
+        c.regime = regime(c.Re);
+        c.dp = dP;
+        c.share = Qtot > 0 ? c.Q / Qtot : 0;
+        c.qDyn = dynamicPressure(c.V, rho);
+      } else {
+        c.V = 0; c.Q = 0; c.Re = 0; c.share = 0; c.dp = 0;
+        c.regime = regime(0);
+      }
+    });
+
+    // vitesse de référence (info) dans le Ø50 si tout passait par une seule ligne
+    return {
+      Qtot, dP, circuits,
+      openCount: open.length,
+      allClosed: open.length === 0,
+      dP_mmCE: dP / G,
+      dP_mbar: dP / 100,
+    };
+  }
+
+  function sweepNetwork(cfg, fStart = 10, fEnd = 50, step = 5) {
+    const points = [];
+    for (let f = fStart; f <= fEnd + 1e-9; f += step) {
+      const r = computeNetwork({ ...cfg, freq: f });
+      points.push({ freq: f, dP: r.dP, Qtot: r.Qtot, openCount: r.openCount });
+    }
+    return points;
+  }
+
   /* ------------------------------ Export -------------------------------- */
   return {
     RHO_AIR, NU_AIR, G, EPS_PVC, DIAMETERS,
@@ -238,5 +322,6 @@ const Physics = (() => {
     dynamicPressure, regularLoss, singularLoss,
     valveK, suddenContractionK, suddenExpansionK,
     computeCircuit, sweep,
+    computeNetwork, sweepNetwork,
   };
 })();
