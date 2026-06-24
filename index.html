@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banc à Perte de Charge — Site interactif</title>
+  <meta name="description" content="Site interactif sur les pertes de charge dans un circuit d'air sous pression. Théorie, composants et banc d'essai virtuel." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===================== NAVIGATION ===================== -->
+  <header class="nav" id="nav">
+    <a class="nav__brand" href="#hero">
+      <span class="nav__logo">≈</span>
+      <span>Banc&nbsp;à&nbsp;Perte&nbsp;de&nbsp;Charge</span>
+    </a>
+    <nav class="nav__links">
+      <a href="#theorie">Théorie</a>
+      <a href="#composants">Composants</a>
+      <a href="#simulateur">Simulateur</a>
+      <a href="#essais">Banc d'essai</a>
+      <a href="#projet">Projet</a>
+    </nav>
+    <button class="nav__burger" id="burger" aria-label="Menu">☰</button>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__content">
+      <p class="hero__tag">Projet Tutoré · BTS Électrotechnique · 2025–2026</p>
+      <h1 class="hero__title">Les pertes de charge,<br/><span>comprises et mises à l'essai</span></h1>
+      <p class="hero__sub">
+        Un banc aéraulique en PVC où l'air sous pression circule dans des conduites Ø50 / Ø32.
+        Explorez la théorie, découvrez le banc réel, puis <strong>lancez vos propres essais</strong>
+        directement dans le navigateur.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#simulateur">▶ Lancer le simulateur</a>
+        <a class="btn btn--ghost" href="#theorie">Comprendre la théorie</a>
+      </div>
+      <div class="hero__stats">
+        <div><strong>ΔP</strong><span>= λ·(L/D)·½ρV²</span></div>
+        <div><strong>Re</strong><span>≈ 15 000</span></div>
+        <div><strong>Air</strong><span>ρ = 1,2 kg/m³</span></div>
+        <div><strong>Altivar 28</strong><span>0–50 Hz</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main>
+
+  <!-- ===================== THÉORIE ===================== -->
+  <section class="section" id="theorie">
+    <div class="section__head">
+      <span class="kicker">01 — Notions fondamentales</span>
+      <h2>La théorie des pertes de charge</h2>
+      <p>Lorsque l'air circule dans une conduite, il perd de l'énergie sous forme de pression.
+         On distingue deux familles de pertes.</p>
+    </div>
+
+    <div class="grid grid--2">
+      <article class="card card--accent">
+        <h3>💨 Pertes régulières</h3>
+        <p>Dues aux <strong>frottements air/paroi</strong> sur toute la longueur d'une conduite droite.</p>
+        <div class="formula">ΔP = λ · (L/D) · (ρV²/2)</div>
+        <ul class="defs">
+          <li><b>λ</b> coefficient de frottement</li>
+          <li><b>L</b> longueur de conduite (m)</li>
+          <li><b>D</b> diamètre intérieur (m)</li>
+          <li><b>ρ</b> masse volumique de l'air (1,2 kg/m³)</li>
+          <li><b>V</b> vitesse de l'air (m/s)</li>
+        </ul>
+      </article>
+
+      <article class="card card--accent2">
+        <h3>🔀 Pertes singulières</h3>
+        <p>Dues aux <strong>perturbations locales</strong> : coudes, vannes, réductions, tés…</p>
+        <div class="formula">ΔP_s = K · (ρV²/2)</div>
+        <table class="ktable">
+          <tr><td>Coude 90°</td><td>K ≈ 0,5 – 1,5</td></tr>
+          <tr><td>Rétrécissement 50→32</td><td>K ≈ 0,5</td></tr>
+          <tr><td>Élargissement brusque</td><td>K = (1−A₁/A₂)²</td></tr>
+          <tr><td>Vanne (ouverture variable)</td><td>K ≈ 0,1 – 230</td></tr>
+          <tr><td>Tube Venturi</td><td>K ≈ 0,05</td></tr>
+        </table>
+      </article>
+    </div>
+
+    <!-- Reynolds / régimes -->
+    <div class="section__sub">
+      <h3>Le nombre de Reynolds &amp; les régimes d'écoulement</h3>
+      <p>Le régime d'écoulement détermine la façon de calculer λ. On le caractérise par le nombre de Reynolds :</p>
+      <div class="formula formula--center">Re = (V · D) / ν<sub>air</sub> &nbsp;&nbsp;avec ν<sub>air</sub> ≈ 15·10⁻⁶ m²/s</div>
+    </div>
+
+    <div class="grid grid--3">
+      <article class="regime regime--lam">
+        <span class="regime__badge">Re &lt; 2 300</span>
+        <h4>Laminaire</h4>
+        <p>Filets parallèles ordonnés. λ = 64/Re (Poiseuille). Peu probable à débit normal.</p>
+      </article>
+      <article class="regime regime--trans">
+        <span class="regime__badge">2 300 – 4 000</span>
+        <h4>Transitoire</h4>
+        <p>Zone instable, difficile à modéliser. Re critique ≈ 2 300.</p>
+      </article>
+      <article class="regime regime--turb">
+        <span class="regime__badge">Re &gt; 4 000</span>
+        <h4>Turbulent</h4>
+        <p>Régime dominant du banc. λ par Blasius : <b>0,316/Re^0,25</b>. Pertes plus importantes.</p>
+      </article>
+    </div>
+
+    <div class="callout">
+      <b>PVC = tube lisse.</b> Rugosité absolue ε ≈ 0,0015 mm → paroi hydrauliquement lisse, frottement minimal.
+      Pour 4 000 &lt; Re &lt; 10⁵, la loi de Blasius donne <b>ΔP ∝ V<sup>1,75</sup></b>.
+    </div>
+
+    <!-- mini calculateur Reynolds -->
+    <div class="mini" id="reynoldsMini">
+      <h4>🧮 Calculateur express de Reynolds</h4>
+      <div class="mini__row">
+        <label>Vitesse V (m/s)
+          <input type="range" id="rxV" min="0.5" max="20" step="0.5" value="5" />
+          <output id="rxVo">5,0</output>
+        </label>
+        <label>Diamètre
+          <select id="rxD">
+            <option value="0.050">Ø50 mm</option>
+            <option value="0.032">Ø32 mm</option>
+          </select>
+        </label>
+      </div>
+      <div class="mini__out">
+        <div><span>Reynolds</span><b id="rxRe">16 667</b></div>
+        <div><span>Régime</span><b id="rxReg" class="pill">Turbulent</b></div>
+        <div><span>λ (frottement)</span><b id="rxLam">0,0278</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMPOSANTS ===================== -->
+  <section class="section section--alt" id="composants">
+    <div class="section__head">
+      <span class="kicker">02 — Réalisation</span>
+      <h2>Les composants du banc aéraulique</h2>
+      <p>Un circuit PVC monté sur mur, alimenté par une pompe Becker pilotée par un variateur Altivar 28.</p>
+    </div>
+
+    <div class="grid grid--cards">
+      <div class="ccard"><div class="ccard__ico">🟦</div><h4>Tubes PVC</h4><p>Ø50 mm — 6 m / Ø32 mm — 3 m. Rigides, 3 lignes parallèles horizontales sur mur.</p></div>
+      <div class="ccard"><div class="ccard__ico">📐</div><h4>Coudes 90°</h4><p>8 coudes (FF + MF) Ø50 Ang. 87°. Singularité mesurable. K ≈ 0,5 – 1,5.</p></div>
+      <div class="ccard"><div class="ccard__ico">🔱</div><h4>Liaisons en T</h4><p>Tés Pied Biche MF + FF Ø50. Division du débit d'air, pertes singulières quantifiées.</p></div>
+      <div class="ccard"><div class="ccard__ico">🔻</div><h4>Réduction Ø50/32</h4><p>Réduction excentrée PVC. Passage de Ø50 à Ø32 mm — étude de la perte par rétrécissement.</p></div>
+      <div class="ccard"><div class="ccard__ico">🔴</div><h4>Vannes boisseau</h4><p>3 vannes Ø50 (levier rouge). Isolement et régulation. Ouverture variable → variation de K.</p></div>
+      <div class="ccard"><div class="ccard__ico">🧪</div><h4>Tube Venturi</h4><p>Mesure de débit par dépression. Pertes faibles (K ≈ 0,05), capté par tuyau transparent.</p></div>
+      <div class="ccard"><div class="ccard__ico">⚡</div><h4>Variateur Altivar 28</h4><p>Telemecanique 1,5 kW, 380 V tri. Variation de fréquence 0–50 Hz → vitesse de la pompe.</p></div>
+      <div class="ccard"><div class="ccard__ico">🌀</div><h4>Pompe Becker</h4><p>Compresseur à palettes rotatif, alimenté en triphasé 380 V. Source d'air du circuit.</p></div>
+      <div class="ccard"><div class="ccard__ico">📊</div><h4>Prises de pression</h4><p>Tuyaux transparents + fitting laiton collé (Interfix). Lecture du ΔP entre 2 points.</p></div>
+    </div>
+
+    <!-- Points de mesure -->
+    <div class="measure">
+      <h3>Points de mesure des pressions</h3>
+      <div class="measure__grid">
+        <div><b>P1–P2</b><span>Avant/après coude 90° → K_coude</span></div>
+        <div><b>P3–P4</b><span>Avant/après réduction Ø50/32 → K_réduction</span></div>
+        <div><b>P5–P6</b><span>Avant/après vanne partielle → K_vanne(θ)</span></div>
+        <div><b>P7–P8</b><span>Conduite droite Ø50 (6 m) → λ·L/D</span></div>
+        <div><b>P9–P10</b><span>Conduite droite Ø32 (3 m) → λ·L/D</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SIMULATEUR ===================== -->
+  <section class="section" id="simulateur">
+    <div class="section__head">
+      <span class="kicker">03 — Outil interactif</span>
+      <h2>Simulateur de perte de charge</h2>
+      <p>Réglez les paramètres du circuit comme sur le banc réel. Les calculs (Darcy-Weisbach,
+         Reynolds, Blasius) se mettent à jour en temps réel.</p>
+    </div>
+
+    <div class="sim">
+      <!-- Contrôles -->
+      <div class="sim__controls panel">
+        <div class="ctrl">
+          <div class="ctrl__label">
+            <span>Fréquence Altivar <span class="hint">(pilote la vitesse d'air)</span></span>
+            <b><span id="vFreq">30</span> Hz</b>
+          </div>
+          <input type="range" id="freq" min="10" max="50" step="1" value="30" />
+        </div>
+
+        <div class="ctrl">
+          <div class="ctrl__label"><span>Vitesse d'air à 50 Hz (Ø50)</span><b><span id="vV50">10,0</span> m/s</b></div>
+          <input type="range" id="v50" min="3" max="18" step="0.5" value="10" />
+        </div>
+
+        <div class="ctrl ctrl--inline">
+          <label class="seg">
+            <span>Conduite étudiée</span>
+            <select id="diam">
+              <option value="D50">Ø50 mm</option>
+              <option value="D32">Ø32 mm</option>
+            </select>
+          </label>
+          <label class="seg">
+            <span>Longueur droite</span>
+            <select id="length">
+              <option value="6">6 m (Ø50)</option>
+              <option value="3">3 m (Ø32)</option>
+              <option value="1">1 m</option>
+              <option value="2">2 m</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="ctrl__title">Singularités du circuit</div>
+
+        <label class="toggle">
+          <input type="checkbox" id="cElbow" checked />
+          <span>Coudes 90°</span>
+          <select id="elbowN" class="tiny">
+            <option>1</option><option selected>2</option><option>4</option><option>8</option>
+          </select>
+        </label>
+
+        <div class="ctrl ctrl--sub">
+          <div class="ctrl__label"><span>K d'un coude</span><b id="vKelbow">1,0</b></div>
+          <input type="range" id="elbowK" min="0.5" max="1.5" step="0.1" value="1.0" />
+        </div>
+
+        <label class="toggle">
+          <input type="checkbox" id="cReduction" />
+          <span>Rétrécissement Ø50→Ø32 (K ≈ 0,5)</span>
+        </label>
+
+        <label class="toggle">
+          <input type="checkbox" id="cValve" checked />
+          <span>Vanne boisseau</span>
+        </label>
+        <div class="ctrl ctrl--sub">
+          <div class="ctrl__label"><span>Ouverture de la vanne</span><b><span id="vValve">100</span> %</b></div>
+          <input type="range" id="valveOpen" min="5" max="100" step="5" value="100" />
+        </div>
+
+        <label class="toggle">
+          <input type="checkbox" id="cVenturi" />
+          <span>Tube Venturi (K ≈ 0,05)</span>
+        </label>
+      </div>
+
+      <!-- Résultats -->
+      <div class="sim__results">
+        <div class="kpis">
+          <div class="kpi"><span>Vitesse d'air</span><b id="kV">—</b><i>m/s</i></div>
+          <div class="kpi"><span>Reynolds</span><b id="kRe">—</b><i id="kReg">—</i></div>
+          <div class="kpi"><span>λ frottement</span><b id="kLam">—</b><i id="kLamLaw">—</i></div>
+          <div class="kpi kpi--hl"><span>ΔP total</span><b id="kDp">—</b><i>Pa</i></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head">
+            <h4>Répartition régulières / singulières</h4>
+            <span id="dpSplit" class="muted">—</span>
+          </div>
+          <canvas id="barCanvas" height="70"></canvas>
+          <ul class="breakdown" id="breakdown"></ul>
+        </div>
+
+        <div class="panel">
+          <div class="panel__head">
+            <h4>ΔP total en fonction de la fréquence Altivar</h4>
+            <span class="muted">ΔP ∝ V<sup>1,75</sup></span>
+          </div>
+          <canvas id="curveCanvas" height="280"></canvas>
+        </div>
+
+        <div class="convert">
+          <div><span>ΔP</span><b id="cPa">— Pa</b></div>
+          <div><span>≈</span><b id="cMmce">— mmCE</b></div>
+          <div><span>≈</span><b id="cMbar">— mbar</b></div>
+          <div><span>Débit Q</span><b id="cQ">— m³/h</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== BANC D'ESSAI ===================== -->
+  <section class="section section--alt" id="essais">
+    <div class="section__head">
+      <span class="kicker">04 — Expérimentation</span>
+      <h2>Banc d'essai virtuel</h2>
+      <p>Reproduisez le protocole expérimental : balayage de la fréquence par paliers, 3 relevés par palier,
+         puis comparaison <strong>mesuré vs théorique</strong>. Les mesures intègrent un bruit réaliste.</p>
+    </div>
+
+    <div class="essai">
+      <div class="essai__setup panel">
+        <h4>Configuration de l'essai</h4>
+        <p class="muted">L'essai utilise la configuration du <a href="#simulateur">simulateur</a> ci-dessus
+          (conduite, singularités, vitesse à 50 Hz).</p>
+
+        <div class="ctrl ctrl--inline">
+          <label class="seg"><span>Palier</span>
+            <select id="step">
+              <option value="5" selected>5 Hz</option>
+              <option value="10">10 Hz</option>
+              <option value="2">2 Hz</option>
+            </select>
+          </label>
+          <label class="seg"><span>Bruit de mesure</span>
+            <select id="noise">
+              <option value="0">0 % (idéal)</option>
+              <option value="0.05" selected>± 5 %</option>
+              <option value="0.08">± 8 %</option>
+            </select>
+          </label>
+        </div>
+
+        <button class="btn btn--primary btn--block" id="runEssai">▶ Lancer l'essai</button>
+        <button class="btn btn--ghost btn--block" id="exportCsv" disabled>⬇ Exporter en CSV</button>
+
+        <div class="essai__verdict" id="verdict"></div>
+      </div>
+
+      <div class="essai__data">
+        <div class="panel">
+          <div class="panel__head"><h4>Courbe ΔP mesuré vs théorique</h4><span class="muted" id="essaiRegime"></span></div>
+          <canvas id="essaiCanvas" height="300"></canvas>
+        </div>
+        <div class="panel">
+          <div class="panel__head"><h4>Relevés de l'essai</h4></div>
+          <div class="tablewrap">
+            <table class="rtable" id="rtable">
+              <thead>
+                <tr>
+                  <th>f (Hz)</th><th>V (m/s)</th><th>Re</th>
+                  <th>Relevé 1</th><th>Relevé 2</th><th>Relevé 3</th>
+                  <th>ΔP moy. (Pa)</th><th>ΔP théo. (Pa)</th><th>Écart</th>
+                </tr>
+              </thead>
+              <tbody id="rtbody">
+                <tr class="empty"><td colspan="9">Lancez un essai pour générer les relevés…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="protocol">
+      <h3>Le protocole expérimental réel</h3>
+      <ol class="steps">
+        <li><b>Mise en service</b> — sectionneur S4 sous tension, vérification d'étanchéité, allumage de l'Altivar 28.</li>
+        <li><b>Réglage du débit</b> — agir sur l'Altivar (10 → 50 Hz) pour faire varier la vitesse de la pompe Becker.</li>
+        <li><b>Mesure des pressions</b> — relever P1 et P2 aux tuyaux transparents, calculer ΔP = P1−P2 (Pa).</li>
+        <li><b>Variation des paramètres</b> — paliers de 5 Hz, tester coude/vanne/réduction, 3 relevés par palier.</li>
+        <li><b>Analyse</b> — calculer ΔP théorique, tracer mesuré vs calculé, en déduire λ expérimental et les écarts.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== PROJET ===================== -->
+  <section class="section" id="projet">
+    <div class="section__head">
+      <span class="kicker">05 — À propos du projet</span>
+      <h2>Le projet tutoré</h2>
+    </div>
+
+    <div class="grid grid--2">
+      <article class="card">
+        <h3>🎯 Objectifs</h3>
+        <ul class="checklist">
+          <li>Concevoir le circuit aéraulique en PVC (Ø50 / Ø32)</li>
+          <li>Intégrer un tube Venturi pour la mesure de débit</li>
+          <li>Contrôler le débit via Altivar 28 + pompe Becker</li>
+          <li>Mesurer les pertes de charge par prises de pression</li>
+          <li>Comparer résultats mesurés et valeurs théoriques</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h3>💶 Budget</h3>
+        <table class="budget">
+          <tr><td>L'Entrepôt du Bricolage (09/03)</td><td>41,66 €</td></tr>
+          <tr><td>L'Entrepôt du Bricolage (18/05)</td><td>76,60 €</td></tr>
+          <tr><td>Botanic — tuyau à air (18/05)</td><td>3,99 €</td></tr>
+          <tr><td>L'Entrepôt du Bricolage (03/06)</td><td>43,86 €</td></tr>
+          <tr class="budget__total"><td>Total dépensé</td><td>166,11 €</td></tr>
+          <tr><td>Budget alloué</td><td>250,00 €</td></tr>
+          <tr class="budget__rest"><td>Reste disponible</td><td>83,89 €</td></tr>
+        </table>
+      </article>
+    </div>
+
+    <div class="results">
+      <h3>Résultats attendus</h3>
+      <div class="grid grid--3">
+        <div class="rcard"><b>&lt; 8 %</b><span>Écart théorie / mesure (Darcy-Weisbach)</span></div>
+        <div class="rcard"><b>~15 000</b><span>Reynolds moyen — régime turbulent</span></div>
+        <div class="rcard"><b>≤ 40 %</b><span>Part des singularités (vannes + coudes) à 50 Hz</span></div>
+      </div>
+    </div>
+
+    <p class="team">Équipe : <b>Martin Mulot · Sully Clain · Anthony Depollier · Enzo Tisne</b> — BTS Électrotechnique 2025–2026</p>
+  </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>Banc à Perte de Charge — site interactif réalisé à partir des documents du projet tutoré.</p>
+    <p class="footer__note">Modèle pédagogique : ρ_air = 1,2 kg/m³, ν_air = 15·10⁻⁶ m²/s, PVC lisse (Blasius). Les valeurs sont des estimations à visée éducative.</p>
+  </footer>
+
+  <script src="js/physics.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

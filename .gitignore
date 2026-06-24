@@ -1,0 +1,10 @@
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+*~
+.vscode/
+.idea/
+
+# Dossiers temporaires
+node_modules/
+*.log
