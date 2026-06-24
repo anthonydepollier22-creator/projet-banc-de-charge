@@ -334,8 +334,12 @@
     }, 150);
   });
 
-  Flow.init($("flowCanvas"));
-  updateReynoldsMini();
-  updateSim();
-  onScroll();
+  // Init : on protège chaque étape pour qu'une erreur n'empêche pas l'affichage
+  try { Flow.init($("flowCanvas")); } catch (e) { console.error("Flow:", e); }
+  try { updateReynoldsMini(); } catch (e) { console.error("Reynolds:", e); }
+  try { updateSim(); } catch (e) { console.error("Sim:", e); }
+  try { onScroll(); } catch (e) { console.error("Scroll:", e); }
+
+  // Signale que l'application s'est initialisée (filet de sécurité dans index.html)
+  window.__appReady = true;
 })();
