@@ -13,6 +13,17 @@ const Charts = (() => {
     text: "rgba(226,238,245,0.75)",
   };
 
+  // Couleur hex (#rrggbb) ou rgb -> rgba avec alpha
+  function hexA(c, a) {
+    if (c.startsWith("#")) {
+      const n = parseInt(c.slice(1), 16);
+      const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+      return `rgba(${r},${g},${b},${a})`;
+    }
+    if (c.startsWith("rgb")) return c.replace(/rgba?\(([^)]+)\)/, (_, v) => `rgba(${v.split(",").slice(0,3).join(",")},${a})`);
+    return c;
+  }
+
   // Gestion du HiDPI : adapte la résolution interne du canvas
   function setupCanvas(canvas) {
     const dpr = window.devicePixelRatio || 1;
@@ -113,8 +124,29 @@ const Charts = (() => {
     options.series.forEach(s => {
       if (!s.data.length) return;
       if (s.type === "line") {
+        // remplissage dégradé sous la courbe (effet "aire")
+        if (s.area) {
+          const grad = ctx.createLinearGradient(0, padT, 0, padT + plotH);
+          grad.addColorStop(0, hexA(s.color, 0.32));
+          grad.addColorStop(1, hexA(s.color, 0));
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          s.data.forEach((p, i) => {
+            const px = X(p.x), py = Y(p.y);
+            if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+          });
+          ctx.lineTo(X(s.data[s.data.length - 1].x), Y(0));
+          ctx.lineTo(X(s.data[0].x), Y(0));
+          ctx.closePath();
+          ctx.fill();
+        }
+        // ligne avec lueur
+        ctx.save();
         ctx.strokeStyle = s.color;
-        ctx.lineWidth = 2.4;
+        ctx.lineWidth = 2.6;
+        ctx.lineJoin = "round";
+        ctx.shadowColor = hexA(s.color, 0.55);
+        ctx.shadowBlur = s.dash ? 0 : 10;
         if (s.dash) ctx.setLineDash(s.dash); else ctx.setLineDash([]);
         ctx.beginPath();
         s.data.forEach((p, i) => {
@@ -122,16 +154,23 @@ const Charts = (() => {
           if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
         });
         ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.restore();
       } else { // scatter
-        ctx.fillStyle = s.color;
         s.data.forEach(p => {
+          const px = X(p.x), py = Y(p.y);
+          ctx.save();
+          ctx.shadowColor = hexA(s.color, 0.8);
+          ctx.shadowBlur = 12;
+          ctx.fillStyle = s.color;
           ctx.beginPath();
-          ctx.arc(X(p.x), Y(p.y), 4, 0, Math.PI * 2);
+          ctx.arc(px, py, s.ring ? 5 : 4, 0, Math.PI * 2);
           ctx.fill();
+          ctx.restore();
           if (s.ring) {
-            ctx.strokeStyle = "rgba(255,255,255,0.6)";
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = "rgba(255,255,255,0.85)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.arc(px, py, s.ring === true ? 5 : 5, 0, Math.PI * 2);
             ctx.stroke();
           }
         });

@@ -104,12 +104,19 @@
 
     // courbe ΔP = f(fréquence)
     drawSimCurve(cfg, r);
+
+    // visualisation d'écoulement d'air
+    const dpRatio = 1 - 1 / (1 + r.dpTotal / 200); // 0..1 (lissé)
+    Flow.update({
+      V: r.V, regime: r.regime.code, dpRatio,
+      reduction: cfg.reduction, valve: cfg.valve, valveOpen: cfg.valveOpen,
+    });
   }
 
   function drawSimCurve(cfg, current) {
     const pts = Physics.sweep(cfg, 10, 50, 2);
     const series = [
-      { type: "line", color: COLOR_THEO, label: "ΔP total", data: pts.map(p => ({ x: p.freq, y: p.dpTotal })) },
+      { type: "line", color: COLOR_THEO, area: true, label: "ΔP total", data: pts.map(p => ({ x: p.freq, y: p.dpTotal })) },
       { type: "line", color: COLOR_SING, dash: [5,4], label: "dont singulières", data: pts.map(p => ({ x: p.freq, y: p.dpSingular })) },
       { type: "scatter", color: "#fff", ring: true, data: [{ x: cfg.freq, y: current.dpTotal }] },
     ];
@@ -203,7 +210,7 @@
 
   function drawEssaiChart(rows) {
     const series = [
-      { type: "line", color: COLOR_THEO, label: "ΔP théorique (Darcy-Weisbach)",
+      { type: "line", color: COLOR_THEO, area: true, label: "ΔP théorique (Darcy-Weisbach)",
         data: rows.map(r => ({ x: r.freq, y: r.dpTotal })) },
       { type: "scatter", color: COLOR_MEAS, ring: true, label: "ΔP mesuré (moyenne)",
         data: rows.map(r => ({ x: r.freq, y: r.moy })) },
@@ -239,17 +246,50 @@
   $("runEssai").addEventListener("click", runEssai);
   $("exportCsv").addEventListener("click", exportCsv);
 
+  /* ====================== ANIMATIONS AU SCROLL ====================== */
+  // Révélation progressive des éléments
+  const revealEls = document.querySelectorAll("[data-reveal]");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add("in"));
+  }
+
+  // Barre de progression + navigation active
+  const progress = $("progress");
+  const sections = [...document.querySelectorAll("section[id]")];
+  const navLinks = [...document.querySelectorAll(".nav__links a")];
+  function onScroll() {
+    const h = document.documentElement;
+    const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+    if (progress) progress.style.width = (scrolled * 100).toFixed(2) + "%";
+    // section active
+    const y = h.scrollTop + 120;
+    let current = sections[0]?.id;
+    for (const s of sections) { if (s.offsetTop <= y) current = s.id; }
+    navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + current));
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+
   /* ====================== INIT ====================== */
   // Redessine les graphes au redimensionnement (canvas HiDPI)
   let rsz;
   window.addEventListener("resize", () => {
     clearTimeout(rsz);
     rsz = setTimeout(() => {
+      Flow.resize();
       updateSim();
       if (lastEssai) drawEssaiChart(lastEssai.rows);
     }, 150);
   });
 
+  Flow.init($("flowCanvas"));
   updateReynoldsMini();
   updateSim();
+  onScroll();
 })();
