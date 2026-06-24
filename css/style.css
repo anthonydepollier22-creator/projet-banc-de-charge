@@ -270,6 +270,61 @@ sub, sup { font-size: .72em; }
 .measure__grid b { display: block; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: .3rem; }
 .measure__grid span { color: var(--muted); font-size: .82rem; }
 
+/* ------------------------------ GALERIE -------------------------------- */
+.gallery-head { margin-top: 2.6rem; margin-bottom: 1.2rem; }
+.gallery-head h3 { font-size: 1.4rem; margin-bottom: .3rem; }
+.gallery {
+  display: grid; gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 180px;
+}
+.shot {
+  position: relative; margin: 0; overflow: hidden; border-radius: 16px;
+  border: 1px solid var(--line); cursor: zoom-in; background: var(--panel-solid);
+  box-shadow: var(--shadow);
+}
+.shot--feature { grid-column: span 2; grid-row: span 2; }
+.shot img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.shot:hover img { transform: scale(1.07); }
+.shot figcaption {
+  position: absolute; inset: auto 0 0 0; padding: 1.6rem .9rem .8rem;
+  font-size: .82rem; color: var(--text);
+  background: linear-gradient(0deg, rgba(4,8,14,.92), rgba(4,8,14,.55) 60%, transparent);
+  transform: translateY(8px); opacity: .9; transition: transform .25s, opacity .25s;
+}
+.shot figcaption b { color: var(--accent); display: block; font-size: .9rem; margin-bottom: .1rem; }
+.shot:hover figcaption { transform: none; opacity: 1; }
+.shot::after {
+  content: "⤢"; position: absolute; top: .6rem; right: .7rem; width: 30px; height: 30px;
+  display: grid; place-items: center; border-radius: 8px; font-size: 1rem;
+  background: rgba(6,9,18,.6); border: 1px solid var(--line); color: var(--accent);
+  opacity: 0; transition: opacity .25s; backdrop-filter: blur(6px);
+}
+.shot:hover::after { opacity: 1; }
+
+/* Lightbox */
+.lightbox {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  align-items: center; justify-content: center; padding: 3rem 1.2rem;
+  background: rgba(3,6,12,.92); backdrop-filter: blur(10px);
+}
+.lightbox.open { display: flex; animation: lbIn .25s ease; }
+@keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
+.lightbox__fig { margin: 0; max-width: 1000px; max-height: 88vh; display: flex; flex-direction: column; gap: .8rem; align-items: center; }
+.lightbox__fig img { max-width: 100%; max-height: 78vh; border-radius: 14px; box-shadow: 0 30px 80px -20px #000; border: 1px solid var(--line); }
+.lightbox__fig figcaption { color: var(--text); font-size: .95rem; text-align: center; }
+.lightbox__close, .lightbox__nav {
+  position: absolute; background: rgba(18,28,44,.7); border: 1px solid var(--line);
+  color: var(--text); cursor: pointer; border-radius: 12px; backdrop-filter: blur(8px);
+  transition: background .2s, transform .2s;
+}
+.lightbox__close:hover, .lightbox__nav:hover { background: var(--accent); color: #04141a; }
+.lightbox__close { top: 1.2rem; right: 1.2rem; width: 46px; height: 46px; font-size: 1.2rem; }
+.lightbox__nav { top: 50%; transform: translateY(-50%); width: 52px; height: 64px; font-size: 2rem; }
+.lightbox__nav:hover { transform: translateY(-50%) scale(1.05); }
+.lightbox__prev { left: 1.2rem; }
+.lightbox__next { right: 1.2rem; }
+
 /* ----------------------------- SIMULATEUR ------------------------------ */
 .sim { display: grid; grid-template-columns: 360px 1fr; gap: 1.5rem; align-items: start; }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: var(--shadow); }
@@ -394,6 +449,8 @@ canvas { width: 100%; display: block; }
   .sim__controls, .essai__setup { position: static; }
   .grid--2, .grid--cards { grid-template-columns: 1fr 1fr; }
   .measure__grid { grid-template-columns: repeat(2, 1fr); }
+  .gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 170px; }
+  .shot--feature { grid-column: span 2; grid-row: span 1; }
 }
 @media (max-width: 720px) {
   .nav__links { display: none; }
@@ -403,5 +460,8 @@ canvas { width: 100%; display: block; }
   .kpis { grid-template-columns: repeat(2, 1fr); }
   .convert { grid-template-columns: repeat(2, 1fr); }
   .measure__grid { grid-template-columns: 1fr; }
+  .gallery { grid-template-columns: 1fr; grid-auto-rows: 220px; }
+  .shot--feature { grid-column: span 1; }
+  .lightbox__nav { width: 42px; height: 52px; font-size: 1.6rem; }
   .hero { padding: 4.5rem 1.2rem 3.5rem; }
 }

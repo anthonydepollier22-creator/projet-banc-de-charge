@@ -246,6 +246,38 @@
   $("runEssai").addEventListener("click", runEssai);
   $("exportCsv").addEventListener("click", exportCsv);
 
+  /* ====================== GALERIE / LIGHTBOX ====================== */
+  const shots = [...document.querySelectorAll(".shot")];
+  const lb = $("lightbox"), lbImg = $("lightboxImg"), lbCap = $("lightboxCap");
+  let lbIndex = 0;
+
+  function openLightbox(i) {
+    lbIndex = (i + shots.length) % shots.length;
+    const fig = shots[lbIndex];
+    lbImg.src = fig.dataset.full;
+    lbImg.alt = fig.querySelector("img")?.alt || "";
+    lbCap.innerHTML = fig.querySelector("figcaption")?.innerHTML || "";
+    lb.classList.add("open");
+    lb.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+  function closeLightbox() {
+    lb.classList.remove("open");
+    lb.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+  shots.forEach((fig, i) => fig.addEventListener("click", () => openLightbox(i)));
+  $("lightboxClose")?.addEventListener("click", closeLightbox);
+  $("lightboxPrev")?.addEventListener("click", () => openLightbox(lbIndex - 1));
+  $("lightboxNext")?.addEventListener("click", () => openLightbox(lbIndex + 1));
+  lb?.addEventListener("click", (e) => { if (e.target === lb) closeLightbox(); });
+  document.addEventListener("keydown", (e) => {
+    if (!lb?.classList.contains("open")) return;
+    if (e.key === "Escape") closeLightbox();
+    else if (e.key === "ArrowLeft") openLightbox(lbIndex - 1);
+    else if (e.key === "ArrowRight") openLightbox(lbIndex + 1);
+  });
+
   /* ====================== ANIMATIONS AU SCROLL ====================== */
   // Révélation progressive des éléments
   const revealEls = document.querySelectorAll("[data-reveal]");

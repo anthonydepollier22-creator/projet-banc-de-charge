@@ -11,7 +11,9 @@ propres essais** directement dans le navigateur.
 
 - **Théorie** : pertes régulières (Darcy-Weisbach), pertes singulières (K·½ρV²),
   nombre de Reynolds et régimes d'écoulement, avec un mini-calculateur de Reynolds en direct.
-- **Composants** : présentation des éléments PVC, instrumentation et points de mesure (P1–P10).
+- **Composants** : présentation des éléments PVC, instrumentation et points de mesure (P1–P10),
+  + une **galerie de photos du banc réel** (vue d'ensemble, coude, prise de pression, réduction,
+  pompe Becker) avec visionneuse plein écran (lightbox, navigation clavier).
 - **Simulateur interactif** : réglez la fréquence Altivar, le diamètre, les singularités
   (coudes, vanne à ouverture variable, réduction Ø50→Ø32, Venturi…) et visualisez en temps réel
   la vitesse, le Reynolds, λ, le ΔP total, sa répartition et la courbe ΔP = f(fréquence).
@@ -51,7 +53,9 @@ index.html        Page principale (toutes les sections)
 css/style.css     Thème et mise en page
 js/physics.js     Moteur de calcul des pertes de charge
 js/charts.js      Tracé sur <canvas> (sans dépendance)
-js/app.js         Logique d'interface (simulateur + banc d'essai)
+js/flow.js        Visualisation animée de l'écoulement d'air
+js/app.js         Logique d'interface (simulateur + banc d'essai + galerie)
+assets/img/       Photos du banc réel
 ```
 
 ## 👥 Équipe

@@ -249,6 +249,34 @@
         <div><b>P9–P10</b><span>Conduite droite Ø32 (3 m) → λ·L/D</span></div>
       </div>
     </div>
+
+    <!-- Galerie : le banc réel -->
+    <div class="gallery-head" data-reveal>
+      <h3>📸 Le banc réel en images</h3>
+      <p class="muted">Photos du banc aéraulique monté sur mur. Cliquez pour agrandir.</p>
+    </div>
+    <div class="gallery" data-reveal>
+      <figure class="shot shot--feature" data-full="assets/img/banc-vue-ensemble.jpg">
+        <img src="assets/img/banc-vue-ensemble.jpg" alt="Vue d'ensemble du circuit PVC avec vannes boisseau" loading="lazy" />
+        <figcaption><b>Vue d'ensemble</b> — 3 lignes PVC Ø50/Ø32, vannes à boisseau (levier rouge) et tés</figcaption>
+      </figure>
+      <figure class="shot" data-full="assets/img/banc-coude.jpg">
+        <img src="assets/img/banc-coude.jpg" alt="Coude PVC 90° avec prise de pression et réduction" loading="lazy" />
+        <figcaption><b>Coude 90°</b> — singularité + prise de pression, réduction en sortie</figcaption>
+      </figure>
+      <figure class="shot" data-full="assets/img/banc-prise-pression.jpg">
+        <img src="assets/img/banc-prise-pression.jpg" alt="Prise de pression : tube transparent collé dans le tube PVC" loading="lazy" />
+        <figcaption><b>Prise de pression</b> — tuyau transparent collé (Interfix) dans le tube gris</figcaption>
+      </figure>
+      <figure class="shot" data-full="assets/img/banc-reduction.jpg">
+        <img src="assets/img/banc-reduction.jpg" alt="Réduction excentrée PVC Ø50/32" loading="lazy" />
+        <figcaption><b>Réduction Ø50/32</b> — réduction excentrée FITT (passage Ø50 → Ø32)</figcaption>
+      </figure>
+      <figure class="shot" data-full="assets/img/banc-pompe-becker.jpg">
+        <img src="assets/img/banc-pompe-becker.jpg" alt="Pompe / compresseur Becker à palettes" loading="lazy" />
+        <figcaption><b>Pompe Becker</b> — compresseur à palettes, manchons silicone et caisson insonorisé</figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- ===================== SIMULATEUR ===================== -->
@@ -496,6 +524,17 @@
   </section>
 
   </main>
+
+  <!-- Lightbox galerie -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox__close" id="lightboxClose" aria-label="Fermer">✕</button>
+    <button class="lightbox__nav lightbox__prev" id="lightboxPrev" aria-label="Précédent">‹</button>
+    <figure class="lightbox__fig">
+      <img id="lightboxImg" src="" alt="" />
+      <figcaption id="lightboxCap"></figcaption>
+    </figure>
+    <button class="lightbox__nav lightbox__next" id="lightboxNext" aria-label="Suivant">›</button>
+  </div>
 
   <footer class="footer">
     <p>Banc à Perte de Charge — site interactif réalisé à partir des documents du projet tutoré.</p>
