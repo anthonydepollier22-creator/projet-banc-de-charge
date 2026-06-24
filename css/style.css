@@ -579,3 +579,51 @@ canvas { width: 100%; display: block; }
   .lightbox__nav { width: 42px; height: 52px; font-size: 1.6rem; }
   .hero { padding: 4.5rem 1.2rem 3.5rem; }
 }
+
+/* ============================ IMPRESSION / PDF ========================= */
+@media print {
+  /* Couleurs lisibles à l'impression, quel que soit le thème écran */
+  :root, [data-theme="light"] {
+    --bg: #fff; --bg-alt: #fff; --panel: #fff; --panel-solid: #fff;
+    --text: #111; --muted: #444; --line: #bbb; --line-soft: #ddd;
+    --accent: #0a7d72; --accent-2: #0369a1; --inset: #f3f5f8;
+    --shadow: none; --glow: none;
+  }
+  html, body { background: #fff !important; color: #111 !important; }
+  body { background-image: none !important; }
+
+  /* Éléments interactifs / décoratifs masqués */
+  .nav, .progress, .totop, .theme-toggle, .nav__burger,
+  .hero__aurora, .hero__grid, .orb, .hero__actions, .schematic,
+  .lightbox, .presets, .sim__controls, .essai__setup,
+  #flowCanvas, #curveCanvas, #barCanvas, #essaiCanvas, .quiz__bar,
+  #printBtn, .dot-live, #quiz, #simulateur .panel--flow {
+    display: none !important;
+  }
+
+  /* Tout le contenu visible (désactive l'animation d'apparition) */
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+
+  .hero { padding: 1.5rem 0 .5rem !important; background: #fff !important; }
+  .hero__title { font-size: 2rem !important; }
+  .hero__title .grad { -webkit-text-fill-color: #0a7d72 !important; color: #0a7d72 !important; }
+  .hero__sub, .hero__tag { color: #333 !important; }
+
+  .section { padding: 1rem 0 !important; max-width: none !important; break-inside: avoid; }
+  .section--alt { border: none !important; }
+  .card, .panel, .ccard, .regime, .rcard, .mini, .measure, .quiz,
+  .formula, .callout, .budget, .steps li {
+    box-shadow: none !important; backdrop-filter: none !important;
+    border: 1px solid #ccc !important; background: #fff !important;
+    break-inside: avoid;
+  }
+  .card, .ccard, .regime, .rcard { page-break-inside: avoid; }
+  a { color: #0369a1 !important; }
+
+  /* Affiche l'URL du site en pied de page imprimé */
+  .footer::after {
+    content: "Version interactive : anthonydepollier22-creator.github.io/projet-banc-de-charge";
+    display: block; margin-top: .4rem; font-size: .8rem; color: #555;
+  }
+  .footer__note { color: #555 !important; }
+}

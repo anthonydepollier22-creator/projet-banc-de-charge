@@ -413,6 +413,9 @@
   const toTop = $("toTop");
   toTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
+  /* ====================== IMPRESSION / PDF ====================== */
+  $("printBtn")?.addEventListener("click", () => window.print());
+
   /* ====================== ANIMATIONS AU SCROLL ====================== */
   // Révélation progressive des éléments
   const revealEls = document.querySelectorAll("[data-reveal]");

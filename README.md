@@ -29,6 +29,8 @@ propres essais** directement dans le navigateur.
   pour réviser les pertes de charge et le fonctionnement du banc.
 - **Thème clair / sombre** : bascule dans la barre de navigation, mémorisée (localStorage) et
   alignée par défaut sur la préférence du système ; graphiques et visualisation adaptatifs.
+- **Impression / PDF** : bouton « Imprimer / Exporter en PDF » et feuille de style d'impression
+  dédiée (document propre en noir sur blanc pour le dossier de projet).
 
 ## 🧮 Modèle physique
 
