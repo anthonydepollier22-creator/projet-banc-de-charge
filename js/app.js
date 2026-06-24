@@ -146,6 +146,30 @@
     el.addEventListener("change", updateSim);
   });
 
+  // Raccourcis de scénarios (ouverture/fermeture des lignes en un clic)
+  const PRESETS = {
+    all:      [{ open: true,  v: 100 }, { open: true,  v: 100 }, { open: true,  v: 100 }],
+    cutLow:   [{ open: true,  v: 100 }, { open: true,  v: 100 }, { open: false, v: 100 }],
+    onlyHigh: [{ open: true,  v: 100 }, { open: false, v: 100 }, { open: false, v: 100 }],
+    midHalf:  [{ open: true,  v: 100 }, { open: true,  v: 50  }, { open: true,  v: 100 }],
+  };
+  function applyPreset(name) {
+    const def = PRESETS[name];
+    if (!def) return;
+    def.forEach((d, i) => {
+      $("c" + (i + 1) + "Open").checked = d.open;
+      $("c" + (i + 1) + "Valve").value = d.v;
+    });
+    document.querySelectorAll(".preset").forEach(b => b.classList.toggle("active", b.dataset.preset === name));
+    updateSim();
+  }
+  document.querySelectorAll(".preset").forEach(b =>
+    b.addEventListener("click", () => applyPreset(b.dataset.preset)));
+  // un réglage manuel retire la sélection de scénario
+  ["c1Open", "c1Valve", "c2Open", "c2Valve", "c3Open", "c3Valve"].forEach(id =>
+    $(id).addEventListener("input", () =>
+      document.querySelectorAll(".preset.active").forEach(b => b.classList.remove("active"))));
+
   /* ====================== BANC D'ESSAI VIRTUEL ====================== */
   let lastEssai = null;
 
@@ -292,6 +316,85 @@
     else if (e.key === "ArrowRight") openLightbox(lbIndex + 1);
   });
 
+  /* ====================== QUIZ ====================== */
+  const QUIZ = [
+    { q: "La formule de Darcy-Weisbach (ΔP = λ·L/D·½ρV²) sert à calculer…",
+      options: ["Les pertes de charge régulières", "Les pertes singulières", "Le débit de la pompe"],
+      answer: 0, explain: "Darcy-Weisbach donne les pertes RÉGULIÈRES, dues au frottement sur toute la longueur de la conduite." },
+    { q: "Un nombre de Reynolds supérieur à 4 000 correspond à un régime…",
+      options: ["Laminaire", "Turbulent", "Au repos"],
+      answer: 1, explain: "Re > 4 000 → régime turbulent, dominant sur le banc (Re ≈ 15 000)." },
+    { q: "Dans le réseau, que se passe-t-il si on FERME la vanne d'une ligne ?",
+      options: ["Plus rien ne change", "Le débit se redistribue sur les autres lignes et le ΔP augmente", "Le débit total double"],
+      answer: 1, explain: "La pompe impose le débit : avec moins de branches ouvertes, la vitesse et le ΔP augmentent sur les lignes restantes." },
+    { q: "Qui pilote la vitesse de l'air dans le banc ?",
+      options: ["La pompe Becker seule", "Le variateur Altivar 28", "Les vannes boisseau"],
+      answer: 1, explain: "L'Altivar 28 fait varier la fréquence (0–50 Hz), donc la vitesse de la pompe Becker, donc le débit." },
+    { q: "Une perte de charge SINGULIÈRE est provoquée par…",
+      options: ["La longueur de la conduite", "Une singularité locale (coude, vanne, réduction…)", "La température de l'air"],
+      answer: 1, explain: "Les pertes singulières viennent des accidents locaux : coudes, vannes, réductions, tés… (ΔP = K·½ρV²)." },
+    { q: "Pour un tube PVC lisse en régime turbulent, on calcule λ avec…",
+      options: ["La loi de Blasius (0,316/Re^0,25)", "La loi de Poiseuille (64/Re)", "La loi des gaz parfaits"],
+      answer: 0, explain: "PVC = tube lisse → Blasius : λ = 0,316/Re^0,25 (valable 4 000 < Re < 10⁵). Poiseuille, c'est le laminaire." },
+  ];
+  let qIndex = 0, qScore = 0;
+
+  function renderQuiz() {
+    const body = $("quizBody");
+    if (!body) return;
+    const item = QUIZ[qIndex];
+    $("quizProgress").textContent = `Question ${qIndex + 1} / ${QUIZ.length}`;
+    $("quizScore").textContent = `Score : ${qScore}`;
+    $("quizBar").style.width = `${(qIndex / QUIZ.length) * 100}%`;
+    body.innerHTML =
+      `<div class="quiz__q">${item.q}</div>` +
+      `<div class="quiz__options">` +
+        item.options.map((o, i) => `<button class="quiz__opt" data-i="${i}">${o}</button>`).join("") +
+      `</div>` +
+      `<div class="quiz__explain" id="quizExplain"></div>` +
+      `<div class="quiz__foot"></div>`;
+    body.querySelectorAll(".quiz__opt").forEach(b =>
+      b.addEventListener("click", () => answerQuiz(parseInt(b.dataset.i, 10))));
+  }
+
+  function answerQuiz(i) {
+    const item = QUIZ[qIndex];
+    const opts = [...$("quizBody").querySelectorAll(".quiz__opt")];
+    if (opts[0].disabled) return;
+    opts.forEach(o => o.disabled = true);
+    opts[item.answer].classList.add("correct");
+    if (i === item.answer) qScore++;
+    else opts[i].classList.add("wrong");
+    $("quizScore").textContent = `Score : ${qScore}`;
+    const ex = $("quizExplain");
+    ex.innerHTML = (i === item.answer ? "✅ <b>Correct.</b> " : "❌ <b>Pas tout à fait.</b> ") + item.explain;
+    ex.classList.add("show");
+    const btn = document.createElement("button");
+    btn.className = "btn btn--primary";
+    btn.textContent = qIndex < QUIZ.length - 1 ? "Question suivante →" : "Voir mon résultat";
+    btn.addEventListener("click", () => { qIndex++; (qIndex < QUIZ.length) ? renderQuiz() : showQuizResult(); });
+    $("quizBody").querySelector(".quiz__foot").appendChild(btn);
+  }
+
+  function showQuizResult() {
+    $("quizProgress").textContent = "Terminé";
+    $("quizBar").style.width = "100%";
+    const pct = qScore / QUIZ.length;
+    const msg = pct === 1 ? "Sans faute, bravo ! 🎉"
+      : pct >= 0.66 ? "Bien joué, solide maîtrise des pertes de charge."
+      : pct >= 0.33 ? "Pas mal — un petit tour par la Théorie et ce sera parfait."
+      : "Reprenez les sections Théorie et Simulateur, puis retentez 😉";
+    $("quizBody").innerHTML =
+      `<div class="quiz__result"><span class="big">${qScore} / ${QUIZ.length}</span>` +
+      `<p>${msg}</p>` +
+      `<button class="btn btn--ghost" id="quizRestart">↻ Recommencer</button></div>`;
+    $("quizRestart").addEventListener("click", () => { qIndex = 0; qScore = 0; renderQuiz(); });
+  }
+
+  /* ====================== BOUTON RETOUR EN HAUT ====================== */
+  const toTop = $("toTop");
+  toTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
   /* ====================== ANIMATIONS AU SCROLL ====================== */
   // Révélation progressive des éléments
   const revealEls = document.querySelectorAll("[data-reveal]");
@@ -319,6 +422,7 @@
     let current = sections[0]?.id;
     for (const s of sections) { if (s.offsetTop <= y) current = s.id; }
     navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + current));
+    if (toTop) toTop.classList.toggle("show", h.scrollTop > 600);
   }
   window.addEventListener("scroll", onScroll, { passive: true });
 
@@ -338,6 +442,7 @@
   try { Flow.init($("flowCanvas")); } catch (e) { console.error("Flow:", e); }
   try { updateReynoldsMini(); } catch (e) { console.error("Reynolds:", e); }
   try { updateSim(); } catch (e) { console.error("Sim:", e); }
+  try { renderQuiz(); } catch (e) { console.error("Quiz:", e); }
   try { onScroll(); } catch (e) { console.error("Scroll:", e); }
 
   // Signale que l'application s'est initialisée (filet de sécurité dans index.html)

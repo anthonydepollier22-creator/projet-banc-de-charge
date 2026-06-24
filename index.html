@@ -4,11 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Banc à Perte de Charge — Site interactif</title>
-  <meta name="description" content="Site interactif sur les pertes de charge dans un circuit d'air sous pression. Théorie, composants et banc d'essai virtuel." />
+  <meta name="description" content="Site interactif sur les pertes de charge dans un circuit d'air sous pression : théorie, banc réel en photos, simulateur de réseau à 3 circuits et banc d'essai virtuel." />
+  <meta name="theme-color" content="#0a1018" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+
+  <!-- Aperçu de partage (Open Graph / Twitter) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Banc à Perte de Charge — Site interactif" />
+  <meta property="og:description" content="Théorie, banc réel en photos, simulateur de réseau à 3 circuits (on coupe les lignes avec les vannes) et banc d'essai virtuel." />
+  <meta property="og:url" content="https://anthonydepollier22-creator.github.io/projet-banc-de-charge/" />
+  <meta property="og:image" content="https://anthonydepollier22-creator.github.io/projet-banc-de-charge/assets/img/banc-vue-ensemble.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260624c" />
+  <link rel="stylesheet" href="css/style.css?v=20260624d" />
 </head>
 <body>
 
@@ -26,6 +36,7 @@
       <a href="#composants">Composants</a>
       <a href="#simulateur">Simulateur</a>
       <a href="#essais">Banc d'essai</a>
+      <a href="#quiz">Quiz</a>
       <a href="#projet">Projet</a>
     </nav>
     <button class="nav__burger" id="burger" aria-label="Menu">☰</button>
@@ -307,6 +318,13 @@
 
         <div class="ctrl__title">Les 3 vannes du banc</div>
 
+        <div class="presets" id="presets">
+          <button type="button" class="preset" data-preset="all">Tout ouvrir</button>
+          <button type="button" class="preset" data-preset="cutLow">Couper Ø32</button>
+          <button type="button" class="preset" data-preset="onlyHigh">1 seule ligne</button>
+          <button type="button" class="preset" data-preset="midHalf">Milieu à 50 %</button>
+        </div>
+
         <!-- Circuit 1 -->
         <div class="circ" id="circ1">
           <div class="circ__top">
@@ -479,10 +497,28 @@
     </div>
   </section>
 
+  <!-- ===================== QUIZ ===================== -->
+  <section class="section section--alt" id="quiz">
+    <div class="section__head" data-reveal>
+      <span class="kicker">05 — Pédagogie</span>
+      <h2>Testez vos connaissances</h2>
+      <p>Six questions pour vérifier que vous maîtrisez les pertes de charge et le fonctionnement du banc.</p>
+    </div>
+
+    <div class="quiz" data-reveal>
+      <div class="quiz__head">
+        <span id="quizProgress" class="muted">Question 1 / 6</span>
+        <span id="quizScore" class="quiz__score">Score : 0</span>
+      </div>
+      <div class="quiz__bar"><span id="quizBar"></span></div>
+      <div id="quizBody"><!-- généré par app.js --></div>
+    </div>
+  </section>
+
   <!-- ===================== PROJET ===================== -->
   <section class="section" id="projet">
     <div class="section__head" data-reveal>
-      <span class="kicker">05 — À propos du projet</span>
+      <span class="kicker">06 — À propos du projet</span>
       <h2>Le projet tutoré</h2>
     </div>
 
@@ -537,15 +573,17 @@
     <button class="lightbox__nav lightbox__next" id="lightboxNext" aria-label="Suivant">›</button>
   </div>
 
+  <button class="totop" id="toTop" aria-label="Revenir en haut">↑</button>
+
   <footer class="footer">
     <p>Banc à Perte de Charge — site interactif réalisé à partir des documents du projet tutoré.</p>
     <p class="footer__note">Modèle pédagogique : ρ_air = 1,2 kg/m³, ν_air = 15·10⁻⁶ m²/s, PVC lisse (Blasius). Les valeurs sont des estimations à visée éducative.</p>
   </footer>
 
-  <script src="js/physics.js?v=20260624c"></script>
-  <script src="js/charts.js?v=20260624c"></script>
-  <script src="js/flow.js?v=20260624c"></script>
-  <script src="js/app.js?v=20260624c"></script>
+  <script src="js/physics.js?v=20260624d"></script>
+  <script src="js/charts.js?v=20260624d"></script>
+  <script src="js/flow.js?v=20260624d"></script>
+  <script src="js/app.js?v=20260624d"></script>
   <script>
     // Filet de sécurité : si le script principal n'a pas pu s'initialiser
     // (ex. ancien fichier en cache), on rend quand même tout le contenu visible.

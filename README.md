@@ -20,9 +20,13 @@ propres essais** directement dans le navigateur.
   parallèle où ΔP est commun à toutes les branches ouvertes). On règle aussi l'ouverture de
   chaque vanne, et on visualise en temps réel l'écoulement dans les 3 lignes (les lignes
   coupées n'ont plus de débit), la répartition du débit et la courbe ΔP réseau = f(fréquence).
+  Des **raccourcis de scénarios** (Tout ouvrir, Couper Ø32, 1 seule ligne, Milieu à 50 %)
+  permettent d'explorer le réseau en un clic.
 - **Banc d'essai virtuel** : reproduit le protocole expérimental (balayage de fréquence,
   3 relevés par palier avec bruit de mesure réaliste), tableau de résultats, courbe
   *mesuré vs théorique*, calcul de l'écart et **export CSV**.
+- **Quiz** : 6 questions à choix multiple avec correction instantanée, explications et score,
+  pour réviser les pertes de charge et le fonctionnement du banc.
 
 ## 🧮 Modèle physique
 
