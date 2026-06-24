@@ -189,7 +189,9 @@ const Flow = (() => {
     ctx.font = "600 11px 'JetBrains Mono', monospace";
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
-    ctx.fillStyle = lane.open ? "rgba(226,238,245,0.85)" : "rgba(255,92,122,0.9)";
+    const light = document.documentElement.dataset.theme === "light";
+    const openColor = light ? "rgba(30,50,75,0.85)" : "rgba(226,238,245,0.85)";
+    ctx.fillStyle = lane.open ? openColor : "rgba(255,92,122,0.95)";
     const txt = lane.open ? `${lane.name}  ${lane.V.toFixed(1)} m/s` : `${lane.name}  — COUPÉE`;
     ctx.fillText(txt, 10, cy - r - 9);
   }

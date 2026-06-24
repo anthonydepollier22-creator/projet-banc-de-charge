@@ -7,11 +7,15 @@
 const Charts = (() => {
   "use strict";
 
-  const COLORS = {
-    grid: "rgba(255,255,255,0.08)",
-    axis: "rgba(255,255,255,0.35)",
-    text: "rgba(226,238,245,0.75)",
-  };
+  // Couleurs d'axes/grille lues depuis le thème courant (clair ou sombre)
+  function themeColors() {
+    const cs = getComputedStyle(document.documentElement);
+    return {
+      grid: cs.getPropertyValue("--chart-grid").trim() || "rgba(255,255,255,0.08)",
+      axis: cs.getPropertyValue("--chart-axis").trim() || "rgba(255,255,255,0.35)",
+      text: cs.getPropertyValue("--chart-text").trim() || "rgba(226,238,245,0.75)",
+    };
+  }
 
   // Couleur hex (#rrggbb) ou rgb -> rgba avec alpha
   function hexA(c, a) {
@@ -56,6 +60,7 @@ const Charts = (() => {
   function plotXY(canvas, options) {
     const { ctx, w, h } = setupCanvas(canvas);
     ctx.clearRect(0, 0, w, h);
+    const COLORS = themeColors();
 
     const padL = 58, padR = 16, padT = 16, padB = 42;
     const plotW = w - padL - padR;

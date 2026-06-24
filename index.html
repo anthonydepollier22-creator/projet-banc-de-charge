@@ -7,6 +7,16 @@
   <meta name="description" content="Site interactif sur les pertes de charge dans un circuit d'air sous pression : théorie, banc réel en photos, simulateur de réseau à 3 circuits et banc d'essai virtuel." />
   <meta name="theme-color" content="#0a1018" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <script>
+    // Applique le thème enregistré avant le rendu (évite tout clignotement)
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        if (t === "light") document.documentElement.dataset.theme = "light";
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- Aperçu de partage (Open Graph / Twitter) -->
   <meta property="og:type" content="website" />
@@ -18,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260624d" />
+  <link rel="stylesheet" href="css/style.css?v=20260624e" />
 </head>
 <body>
 
@@ -39,6 +49,7 @@
       <a href="#quiz">Quiz</a>
       <a href="#projet">Projet</a>
     </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" title="Thème clair / sombre">🌙</button>
     <button class="nav__burger" id="burger" aria-label="Menu">☰</button>
   </header>
 
@@ -580,10 +591,10 @@
     <p class="footer__note">Modèle pédagogique : ρ_air = 1,2 kg/m³, ν_air = 15·10⁻⁶ m²/s, PVC lisse (Blasius). Les valeurs sont des estimations à visée éducative.</p>
   </footer>
 
-  <script src="js/physics.js?v=20260624d"></script>
-  <script src="js/charts.js?v=20260624d"></script>
-  <script src="js/flow.js?v=20260624d"></script>
-  <script src="js/app.js?v=20260624d"></script>
+  <script src="js/physics.js?v=20260624e"></script>
+  <script src="js/charts.js?v=20260624e"></script>
+  <script src="js/flow.js?v=20260624e"></script>
+  <script src="js/app.js?v=20260624e"></script>
   <script>
     // Filet de sécurité : si le script principal n'a pas pu s'initialiser
     // (ex. ancien fichier en cache), on rend quand même tout le contenu visible.

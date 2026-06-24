@@ -27,6 +27,8 @@ propres essais** directement dans le navigateur.
   *mesuré vs théorique*, calcul de l'écart et **export CSV**.
 - **Quiz** : 6 questions à choix multiple avec correction instantanée, explications et score,
   pour réviser les pertes de charge et le fonctionnement du banc.
+- **Thème clair / sombre** : bascule dans la barre de navigation, mémorisée (localStorage) et
+  alignée par défaut sur la préférence du système ; graphiques et visualisation adaptatifs.
 
 ## 🧮 Modèle physique
 

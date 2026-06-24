@@ -20,6 +20,24 @@
   document.querySelectorAll(".nav__links a").forEach(a =>
     a.addEventListener("click", () => document.querySelector(".nav__links").classList.remove("open")));
 
+  /* ====================== BASCULE DE THÈME (clair / sombre) ============= */
+  const themeBtn = $("themeToggle");
+  function syncThemeIcon() {
+    const light = document.documentElement.dataset.theme === "light";
+    if (themeBtn) themeBtn.textContent = light ? "☀️" : "🌙";
+  }
+  syncThemeIcon();
+  themeBtn?.addEventListener("click", () => {
+    const light = document.documentElement.dataset.theme === "light";
+    if (light) { delete document.documentElement.dataset.theme; }
+    else { document.documentElement.dataset.theme = "light"; }
+    try { localStorage.setItem("theme", light ? "dark" : "light"); } catch (e) {}
+    syncThemeIcon();
+    // les graphes lisent les couleurs du thème : on les redessine
+    try { updateSim(); } catch (e) {}
+    try { if (lastEssai) drawEssaiChart(lastEssai.rows); } catch (e) {}
+  });
+
   /* ====================== MINI CALCULATEUR REYNOLDS ====================== */
   function updateReynoldsMini() {
     const V = parseFloat($("rxV").value);
