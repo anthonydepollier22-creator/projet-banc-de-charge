@@ -399,6 +399,7 @@
   function showQuizResult() {
     $("quizProgress").textContent = "Terminé";
     $("quizBar").style.width = "100%";
+    markStep("quiz");
     const pct = qScore / QUIZ.length;
     const msg = pct === 1 ? "Sans faute, bravo ! 🎉"
       : pct >= 0.66 ? "Bien joué, solide maîtrise des pertes de charge."
@@ -453,6 +454,77 @@
   /* ====================== IMPRESSION / PDF ====================== */
   $("printBtn")?.addEventListener("click", () => window.print());
 
+  /* ====================== PARCOURS / PROGRESSION ====================== */
+  const PARCOURS_STEPS = ["theorie", "composants", "simulateur", "essais", "exercices", "quiz"];
+  let doneSteps = new Set();
+  try { doneSteps = new Set(JSON.parse(localStorage.getItem("progress") || "[]")); } catch (e) {}
+  function saveProgress() { try { localStorage.setItem("progress", JSON.stringify([...doneSteps])); } catch (e) {} }
+  function renderProgress() {
+    const pct = Math.round(doneSteps.size / PARCOURS_STEPS.length * 100);
+    const bar = $("parcoursBar"); if (bar) bar.style.width = pct + "%";
+    const p = $("parcoursPct"); if (p) p.textContent = pct + " %" + (pct === 100 ? " · terminé 🎉" : "");
+    document.querySelectorAll(".pstep").forEach(el => el.classList.toggle("done", doneSteps.has(el.dataset.step)));
+    document.querySelectorAll(".btn--done").forEach(b => {
+      const d = doneSteps.has(b.dataset.step);
+      b.classList.toggle("is-done", d);
+      b.textContent = d ? "✓ Étape terminée — cliquez pour annuler" : "✓ J'ai terminé cette étape";
+    });
+  }
+  function markStep(id) { if (!doneSteps.has(id)) { doneSteps.add(id); saveProgress(); renderProgress(); } }
+  function toggleStep(id) { doneSteps.has(id) ? doneSteps.delete(id) : doneSteps.add(id); saveProgress(); renderProgress(); }
+  document.querySelectorAll(".btn--done").forEach(b => b.addEventListener("click", () => toggleStep(b.dataset.step)));
+  document.querySelectorAll(".pstep__check").forEach(chk => chk.addEventListener("click", e => {
+    e.preventDefault(); e.stopPropagation();
+    toggleStep(chk.closest(".pstep").dataset.step);
+  }));
+  $("parcoursResume")?.addEventListener("click", () => {
+    const next = PARCOURS_STEPS.find(s => !doneSteps.has(s)) || PARCOURS_STEPS[0];
+    document.getElementById(next)?.scrollIntoView({ behavior: "smooth" });
+  });
+  $("parcoursReset")?.addEventListener("click", () => { doneSteps.clear(); saveProgress(); renderProgress(); });
+
+  /* ====================== EXERCICES AUTO-CORRIGÉS ====================== */
+  let exLevel = "all", exCurrent = null, exTried = 0, exGood = 0, exAnswered = false;
+  const LVL_LABEL = { debutant: "Débutant", inter: "Intermédiaire", avance: "Avancé" };
+  function loadExercise() {
+    if (typeof Exercises === "undefined") return;
+    exCurrent = Exercises.pick(exLevel);
+    exAnswered = false;
+    const lv = $("exLevel"); lv.textContent = LVL_LABEL[exCurrent.level]; lv.className = "lvl lvl--" + exCurrent.level;
+    $("exTitle").textContent = exCurrent.title;
+    $("exStatement").innerHTML = exCurrent.statement;
+    $("exUnit").textContent = exCurrent.unit || "";
+    $("exInput").value = "";
+    $("exFeedback").className = "ex-feedback"; $("exFeedback").innerHTML = "";
+    $("exSolution").className = "ex-solution"; $("exSolution").innerHTML = "";
+  }
+  function exFeedback(kind, html) { const el = $("exFeedback"); el.className = "ex-feedback show ex-" + kind; el.innerHTML = html; }
+  function exRevealSolution() { const s = $("exSolution"); s.className = "ex-solution show"; s.innerHTML = "<b>Correction :</b><br>" + exCurrent.solution; }
+  function exUpdateScore() { $("exScore").textContent = `Réussis : ${exGood} / ${exTried}`; if (exGood >= 3) markStep("exercices"); }
+  function checkExercise() {
+    if (!exCurrent) return;
+    const raw = $("exInput").value.replace(",", ".").trim();
+    const val = parseFloat(raw);
+    if (raw === "" || isNaN(val)) { exFeedback("warn", "✏️ Entrez d'abord une valeur numérique."); return; }
+    const ans = exCurrent.answer;
+    const rel = Math.abs(val - ans) / (Math.abs(ans) || 1);
+    const ok = rel <= (exCurrent.tol || 0.03) || Math.abs(val - ans) <= 0.01;
+    if (!exAnswered) { exTried++; if (ok) exGood++; exAnswered = true; exUpdateScore(); }
+    const shown = ans.toLocaleString("fr-FR", { maximumFractionDigits: 2 });
+    if (ok) exFeedback("ok", `✅ Bravo, c'est juste ! Réponse ≈ <b>${shown} ${exCurrent.unit || ""}</b>.`);
+    else exFeedback("bad", `❌ Presque… Réponse attendue ≈ <b>${shown} ${exCurrent.unit || ""}</b> (tolérance ±${Math.round((exCurrent.tol||0.03)*100)} %).`);
+    exRevealSolution();
+  }
+  $("exCheck")?.addEventListener("click", checkExercise);
+  $("exInput")?.addEventListener("keydown", e => { if (e.key === "Enter") checkExercise(); });
+  $("exNext")?.addEventListener("click", loadExercise);
+  $("exSolutionBtn")?.addEventListener("click", () => { if (exCurrent) exRevealSolution(); });
+  document.querySelectorAll("#exFilters .filter").forEach(b => b.addEventListener("click", () => {
+    exLevel = b.dataset.lvl;
+    document.querySelectorAll("#exFilters .filter").forEach(x => x.classList.toggle("active", x === b));
+    loadExercise();
+  }));
+
   /* ====================== ANIMATIONS AU SCROLL ====================== */
   // Révélation progressive des éléments
   const revealEls = document.querySelectorAll("[data-reveal]");
@@ -501,6 +573,8 @@
   try { updateReynoldsMini(); } catch (e) { console.error("Reynolds:", e); }
   try { updateSim(); } catch (e) { console.error("Sim:", e); }
   try { renderQuiz(); } catch (e) { console.error("Quiz:", e); }
+  try { loadExercise(); } catch (e) { console.error("Exercices:", e); }
+  try { renderProgress(); } catch (e) { console.error("Parcours:", e); }
   try { onScroll(); } catch (e) { console.error("Scroll:", e); }
 
   // Signale que l'application s'est initialisée (filet de sécurité dans index.html)

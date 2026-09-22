@@ -4,11 +4,15 @@ Site web interactif sur les **pertes de charge** dans un circuit d'air sous pres
 réalisé à partir des documents du projet tutoré **BTS Électrotechnique 2025–2026**
 (banc aéraulique en PVC Ø50 / Ø32, pompe Becker, variateur Altivar 28).
 
-Le site présente la théorie, les composants du banc réel, **et permet de faire ses
-propres essais** directement dans le navigateur.
+Pensé comme un **cours complet réutilisable** : théorie, banc réel, simulations,
+**parcours avec progression enregistrée**, **exercices auto-corrigés** et quiz.
+Utilisable en autonomie par un élève, ou en classe par un professeur.
 
 ## ✨ Fonctionnalités
 
+- **Parcours du cours** : 6 étapes (comprendre → découvrir → simuler → expérimenter →
+  s'entraîner → se tester) avec **barre de progression enregistrée sur l'appareil**
+  (localStorage), bouton « Reprendre » et coches « J'ai terminé cette étape ».
 - **Théorie** : pertes régulières (Darcy-Weisbach), pertes singulières (K·½ρV²),
   nombre de Reynolds et régimes d'écoulement, avec un mini-calculateur de Reynolds en direct.
   Contenu calibré niveau **BTS Électrotechnique** : analogie hydraulique ↔ électrique (loi d'Ohm,

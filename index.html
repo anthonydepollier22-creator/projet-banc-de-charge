@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260625a" />
+  <link rel="stylesheet" href="css/style.css?v=20260625b" />
 </head>
 <body>
 
@@ -43,13 +43,13 @@
       <span>Banc&nbsp;à&nbsp;Perte&nbsp;de&nbsp;Charge</span>
     </a>
     <nav class="nav__links" id="navLinks">
+      <a href="#parcours">Parcours</a>
       <a href="#theorie">Théorie</a>
       <a href="#composants">Composants</a>
       <a href="#simulateur">Simulateur</a>
       <a href="#essais">Banc d'essai</a>
+      <a href="#exercices">Exercices</a>
       <a href="#quiz">Quiz</a>
-      <a href="#projets">Pistes</a>
-      <a href="#projet">Projet</a>
       <a href="#glossaire">Lexique</a>
     </nav>
     <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" title="Thème clair / sombre">🌙</button>
@@ -152,6 +152,61 @@
   </section>
 
   <main>
+
+  <!-- ===================== PARCOURS / PROGRESSION ===================== -->
+  <section class="section" id="parcours">
+    <div class="section__head" data-reveal>
+      <span class="kicker">Votre progression</span>
+      <h2>Parcours du cours</h2>
+      <p>Suivez les 6 étapes dans l'ordre — ou piochez librement. Votre progression est
+         <strong>enregistrée sur cet appareil</strong> : vous pouvez revenir à tout moment
+         reprendre là où vous en étiez.</p>
+    </div>
+
+    <div class="parcours" data-reveal>
+      <div class="parcours__bar-wrap">
+        <div class="parcours__bar"><span id="parcoursBar"></span></div>
+        <div class="parcours__meta">
+          <span id="parcoursPct">0 %</span>
+          <button class="btn btn--primary btn--sm" id="parcoursResume">▶ Reprendre</button>
+          <button class="btn btn--ghost btn--sm" id="parcoursReset">Réinitialiser</button>
+        </div>
+      </div>
+
+      <div class="psteps" id="psteps">
+        <a class="pstep" href="#theorie" data-step="theorie">
+          <span class="pstep__n">1</span>
+          <span class="pstep__body"><b>Comprendre la théorie</b><span>Pertes, Reynolds, formules, analogie électrique</span></span>
+          <span class="pstep__check" title="Marquer comme fait">✓</span>
+        </a>
+        <a class="pstep" href="#composants" data-step="composants">
+          <span class="pstep__n">2</span>
+          <span class="pstep__body"><b>Découvrir le banc</b><span>Composants, instrumentation, photos réelles</span></span>
+          <span class="pstep__check" title="Marquer comme fait">✓</span>
+        </a>
+        <a class="pstep" href="#simulateur" data-step="simulateur">
+          <span class="pstep__n">3</span>
+          <span class="pstep__body"><b>Simuler le réseau</b><span>3 circuits, vannes, débit, ΔP en direct</span></span>
+          <span class="pstep__check" title="Marquer comme fait">✓</span>
+        </a>
+        <a class="pstep" href="#essais" data-step="essais">
+          <span class="pstep__n">4</span>
+          <span class="pstep__body"><b>Faire des essais</b><span>Protocole, mesures, courbe mesuré vs théorique</span></span>
+          <span class="pstep__check" title="Marquer comme fait">✓</span>
+        </a>
+        <a class="pstep" href="#exercices" data-step="exercices">
+          <span class="pstep__n">5</span>
+          <span class="pstep__body"><b>S'entraîner</b><span>Exercices auto-corrigés à valeurs aléatoires</span></span>
+          <span class="pstep__check" title="Marquer comme fait">✓</span>
+        </a>
+        <a class="pstep" href="#quiz" data-step="quiz">
+          <span class="pstep__n">6</span>
+          <span class="pstep__body"><b>Se tester</b><span>Quiz de 6 questions avec correction</span></span>
+          <span class="pstep__check" title="Marquer comme fait">✓</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
   <!-- ===================== THÉORIE ===================== -->
   <section class="section" id="theorie">
@@ -299,6 +354,9 @@
       <canvas id="moodyCanvas" height="300"></canvas>
       <p class="muted moody__note">Ce graphique de référence donne le coefficient de frottement λ selon le régime. Plus l'air va vite (Re grand), plus λ diminue. À gauche (Re &lt; 2 300) : laminaire, λ = 64/Re. À droite : turbulent (cas du banc). La bande orange (2 300–4 000) est la zone instable de transition.</p>
     </div>
+    <div class="lesson-done" data-reveal>
+      <button class="btn btn--done" data-step="theorie">✓ J'ai terminé cette étape</button>
+    </div>
   </section>
 
   <!-- ===================== COMPOSANTS ===================== -->
@@ -359,6 +417,9 @@
         <img src="assets/img/banc-pompe-becker.jpg" alt="Pompe / compresseur Becker à palettes" loading="lazy" />
         <figcaption><b>Pompe Becker</b> — compresseur à palettes, manchons silicone et caisson insonorisé</figcaption>
       </figure>
+    </div>
+    <div class="lesson-done" data-reveal>
+      <button class="btn btn--done" data-step="composants">✓ J'ai terminé cette étape</button>
     </div>
   </section>
 
@@ -492,6 +553,9 @@
         </div>
       </div>
     </div>
+    <div class="lesson-done" data-reveal>
+      <button class="btn btn--done" data-step="simulateur">✓ J'ai terminé cette étape</button>
+    </div>
   </section>
 
   <!-- ===================== BANC D'ESSAI ===================== -->
@@ -567,12 +631,61 @@
         <li><b>Analyse</b> — calculer ΔP théorique, tracer mesuré vs calculé, en déduire λ expérimental et les écarts.</li>
       </ol>
     </div>
+
+    <div class="lesson-done" data-reveal>
+      <button class="btn btn--done" data-step="essais">✓ J'ai terminé cette étape</button>
+    </div>
+  </section>
+
+  <!-- ===================== EXERCICES ===================== -->
+  <section class="section" id="exercices">
+    <div class="section__head" data-reveal>
+      <span class="kicker">05 — S'entraîner</span>
+      <h2>Exercices auto-corrigés</h2>
+      <p>Des exercices à <strong>valeurs aléatoires</strong> : tapez votre réponse, vérifiez, et
+         affichez la correction détaillée. Cliquez sur « Nouvel exercice » autant de fois que vous
+         voulez — les nombres changent à chaque fois.</p>
+    </div>
+
+    <div class="ex-toolbar" data-reveal>
+      <div class="filters" id="exFilters">
+        <button type="button" class="filter active" data-lvl="all">Tous niveaux</button>
+        <button type="button" class="filter" data-lvl="debutant">Débutant</button>
+        <button type="button" class="filter" data-lvl="inter">Intermédiaire</button>
+        <button type="button" class="filter" data-lvl="avance">Avancé</button>
+      </div>
+      <div class="ex-score" id="exScore">Réussis : 0 / 0</div>
+    </div>
+
+    <div class="panel ex-card" data-reveal>
+      <div class="ex-head">
+        <span class="lvl" id="exLevel">—</span>
+        <span class="ex-title" id="exTitle">—</span>
+      </div>
+      <div class="ex-statement" id="exStatement">Chargement…</div>
+      <div class="ex-answer">
+        <label for="exInput">Votre réponse&nbsp;:</label>
+        <input type="number" id="exInput" step="any" inputmode="decimal" placeholder="valeur" />
+        <span class="ex-unit" id="exUnit"></span>
+        <button class="btn btn--primary" id="exCheck">Vérifier</button>
+      </div>
+      <div class="ex-feedback" id="exFeedback"></div>
+      <div class="ex-solution" id="exSolution"></div>
+      <div class="ex-foot">
+        <button class="btn btn--ghost" id="exSolutionBtn">💡 Voir la correction</button>
+        <button class="btn btn--ghost" id="exNext">🎲 Nouvel exercice</button>
+      </div>
+    </div>
+
+    <div class="lesson-done" data-reveal>
+      <button class="btn btn--done" data-step="exercices">✓ J'ai terminé cette étape</button>
+    </div>
   </section>
 
   <!-- ===================== QUIZ ===================== -->
   <section class="section section--alt" id="quiz">
     <div class="section__head" data-reveal>
-      <span class="kicker">05 — Pédagogie</span>
+      <span class="kicker">06 — Se tester</span>
       <h2>Testez vos connaissances</h2>
       <p>Six questions pour vérifier que vous maîtrisez les pertes de charge et le fonctionnement du banc.</p>
     </div>
@@ -585,12 +698,15 @@
       <div class="quiz__bar"><span id="quizBar"></span></div>
       <div id="quizBody"><!-- généré par app.js --></div>
     </div>
+    <div class="lesson-done" data-reveal>
+      <button class="btn btn--done" data-step="quiz">✓ J'ai terminé cette étape</button>
+    </div>
   </section>
 
   <!-- ===================== PISTES D'ÉTUDE / PROJETS ===================== -->
   <section class="section" id="projets">
     <div class="section__head" data-reveal>
-      <span class="kicker">06 — Pour aller plus loin</span>
+      <span class="kicker">07 — Pour aller plus loin</span>
       <h2>Pistes d'étude &amp; projets</h2>
       <p>Le banc est une base ouverte : voici des sujets d'approfondissement réalisables
          dessus, du relevé simple au projet instrumenté. Filtrez par niveau.</p>
@@ -680,7 +796,7 @@
   <!-- ===================== PROJET ===================== -->
   <section class="section section--alt" id="projet">
     <div class="section__head" data-reveal>
-      <span class="kicker">07 — À propos du projet</span>
+      <span class="kicker">08 — À propos du projet</span>
       <h2>Le projet tutoré</h2>
     </div>
 
@@ -725,7 +841,7 @@
   <!-- ===================== GLOSSAIRE ===================== -->
   <section class="section" id="glossaire">
     <div class="section__head" data-reveal>
-      <span class="kicker">08 — Lexique</span>
+      <span class="kicker">09 — Lexique</span>
       <h2>Glossaire</h2>
       <p>Tous les mots-clés du banc, expliqués simplement. Tapez un mot pour filtrer la liste.</p>
     </div>
@@ -783,10 +899,11 @@
     <button class="btn btn--ghost" id="printBtn" type="button">🖨️ Imprimer / Exporter en PDF</button>
   </footer>
 
-  <script src="js/physics.js?v=20260625a"></script>
-  <script src="js/charts.js?v=20260625a"></script>
-  <script src="js/flow.js?v=20260625a"></script>
-  <script src="js/app.js?v=20260625a"></script>
+  <script src="js/physics.js?v=20260625b"></script>
+  <script src="js/charts.js?v=20260625b"></script>
+  <script src="js/flow.js?v=20260625b"></script>
+  <script src="js/exercises.js?v=20260625b"></script>
+  <script src="js/app.js?v=20260625b"></script>
   <script>
     // Filet de sécurité : si le script principal n'a pas pu s'initialiser
     // (ex. ancien fichier en cache), on rend quand même tout le contenu visible.
