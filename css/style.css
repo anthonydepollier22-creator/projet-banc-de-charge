@@ -751,7 +751,7 @@ canvas { width: 100%; display: block; }
 
   /* Affiche l'URL du site en pied de page imprimé */
   .footer::after {
-    content: "Version interactive : anthonydepollier22-creator.github.io/projet-banc-de-charge";
+    content: "Version interactive : anthonydepollier22-creator.github.io/cours-perte-de-charge";
     display: block; margin-top: .4rem; font-size: .8rem; color: #555;
   }
   .footer__note { color: #555 !important; }

@@ -35,6 +35,10 @@ Utilisable en autonomie par un élève, ou en classe par un professeur.
 - **Banc d'essai virtuel** : reproduit le protocole expérimental (balayage de fréquence,
   3 relevés par palier avec bruit de mesure réaliste), tableau de résultats, courbe
   *mesuré vs théorique*, calcul de l'écart et **export CSV**.
+- **Exercices auto-corrigés** : 10 générateurs à **valeurs aléatoires** (Reynolds, débit,
+  vitesse, pression dynamique, Blasius, Darcy-Weisbach, pertes singulières, conversions,
+  puissance, lois d'affinité), vérification avec tolérance, **correction pas à pas**, filtre
+  par niveau et score. Recommençable à l'infini.
 - **Quiz** : 6 questions à choix multiple avec correction instantanée, explications et score,
   pour réviser les pertes de charge et le fonctionnement du banc.
 - **Thème clair / sombre** : identité claire et chaleureuse par défaut (crème + corail / bleu /
@@ -77,7 +81,8 @@ css/style.css     Thème et mise en page
 js/physics.js     Moteur de calcul des pertes de charge
 js/charts.js      Tracé sur <canvas> (sans dépendance)
 js/flow.js        Visualisation animée de l'écoulement d'air
-js/app.js         Logique d'interface (simulateur + banc d'essai + galerie)
+js/exercises.js   Générateurs d'exercices auto-corrigés
+js/app.js         Logique d'interface (parcours, simulateur, essais, exercices, quiz…)
 assets/img/       Photos du banc réel
 ```
 
