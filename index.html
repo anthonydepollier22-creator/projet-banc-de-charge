@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260625c" />
+  <link rel="stylesheet" href="css/style.css?v=20260625d" />
 </head>
 <body>
 
@@ -43,9 +43,9 @@
       <span>Banc&nbsp;à&nbsp;Perte&nbsp;de&nbsp;Charge</span>
     </a>
     <nav class="nav__links" id="navLinks">
+      <a href="#accueil">Accueil</a>
       <a href="#parcours">Parcours</a>
       <a href="#theorie">Théorie</a>
-      <a href="#composants">Composants</a>
       <a href="#simulateur">Simulateur</a>
       <a href="#essais">Banc d'essai</a>
       <a href="#exercices">Exercices</a>
@@ -73,8 +73,8 @@
         directement dans le navigateur.
       </p>
       <div class="hero__actions">
-        <a class="btn btn--primary" href="#simulateur">▶&nbsp; Lancer le simulateur</a>
-        <a class="btn btn--ghost" href="#theorie">Comprendre la théorie</a>
+        <a class="btn btn--primary" href="#parcours">🎓&nbsp; Commencer le cours</a>
+        <a class="btn btn--ghost" href="#simulateur">Ouvrir le simulateur</a>
       </div>
 
       <!-- Schéma de circuit animé -->
@@ -152,6 +152,72 @@
   </section>
 
   <main>
+
+  <!-- ===================== ACCUEIL ===================== -->
+  <section class="section" id="accueil">
+    <div class="section__head" data-reveal>
+      <span class="kicker">Bienvenue</span>
+      <h2>Un cours interactif sur la perte de charge</h2>
+      <p>Comprendre pourquoi l'air perd de la pression dans un circuit, savoir le calculer,
+         le simuler et le mesurer — le tout expliqué simplement et relié à l'électrotechnique.
+         Avancez à votre rythme : votre progression est enregistrée.</p>
+    </div>
+
+    <div class="home-grid" data-reveal>
+      <div class="home-learn card">
+        <h3>🎯 Ce que vous allez apprendre</h3>
+        <ul class="learn-list">
+          <li>Ce qu'est une <b>perte de charge</b> et d'où elle vient</li>
+          <li>Calculer le <b>nombre de Reynolds</b> et reconnaître le régime</li>
+          <li>Appliquer <b>Darcy-Weisbach</b> et les pertes singulières (K)</li>
+          <li>Faire le lien avec l'<b>électrotechnique</b> (loi d'Ohm, Altivar)</li>
+          <li>Simuler un <b>réseau</b> et couper des circuits avec les vannes</li>
+          <li>Mener un <b>essai</b> et comparer mesure et théorie</li>
+        </ul>
+      </div>
+      <div class="home-stats">
+        <div class="hstat"><b>6</b><span>étapes de cours</span></div>
+        <div class="hstat"><b>10</b><span>exercices auto-corrigés</span></div>
+        <div class="hstat"><b>3</b><span>simulations interactives</span></div>
+        <div class="hstat"><b>22</b><span>termes au glossaire</span></div>
+      </div>
+    </div>
+
+    <h3 class="home-sub" data-reveal>Par où commencer ?</h3>
+    <div class="home-cta" data-reveal>
+      <a class="hcard" href="#parcours">
+        <span class="hcard__ico">🎓</span>
+        <b>Commencer le cours</b>
+        <span>Le parcours guidé en 6 étapes</span>
+      </a>
+      <a class="hcard" href="#simulateur">
+        <span class="hcard__ico">🎛️</span>
+        <b>Simuler</b>
+        <span>Réseau 3 circuits, vannes, ΔP en direct</span>
+      </a>
+      <a class="hcard" href="#exercices">
+        <span class="hcard__ico">✏️</span>
+        <b>S'entraîner</b>
+        <span>Exercices auto-corrigés à volonté</span>
+      </a>
+      <a class="hcard" href="#glossaire">
+        <span class="hcard__ico">📖</span>
+        <b>Réviser</b>
+        <span>Lexique clair avec recherche</span>
+      </a>
+    </div>
+
+    <div class="home-audience" data-reveal>
+      <div class="aud">
+        <b>👩‍🎓 Pour les élèves</b>
+        <span>BTS Électrotechnique et lycée : apprenez à votre rythme, entraînez-vous et testez-vous. Aucune installation, tout se passe dans le navigateur.</span>
+      </div>
+      <div class="aud">
+        <b>👨‍🏫 Pour les enseignants</b>
+        <span>Un support de cours et de TP prêt à l'emploi : version imprimable / PDF, pistes de projets par niveau, et des simulations à projeter en classe.</span>
+      </div>
+    </div>
+  </section>
 
   <!-- ===================== PARCOURS / PROGRESSION ===================== -->
   <section class="section" id="parcours">
@@ -899,11 +965,11 @@
     <button class="btn btn--ghost" id="printBtn" type="button">🖨️ Imprimer / Exporter en PDF</button>
   </footer>
 
-  <script src="js/physics.js?v=20260625c"></script>
-  <script src="js/charts.js?v=20260625c"></script>
-  <script src="js/flow.js?v=20260625c"></script>
-  <script src="js/exercises.js?v=20260625c"></script>
-  <script src="js/app.js?v=20260625c"></script>
+  <script src="js/physics.js?v=20260625d"></script>
+  <script src="js/charts.js?v=20260625d"></script>
+  <script src="js/flow.js?v=20260625d"></script>
+  <script src="js/exercises.js?v=20260625d"></script>
+  <script src="js/app.js?v=20260625d"></script>
   <script>
     // Filet de sécurité : si le script principal n'a pas pu s'initialiser
     // (ex. ancien fichier en cache), on rend quand même tout le contenu visible.
