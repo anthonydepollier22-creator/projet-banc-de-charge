@@ -11,6 +11,12 @@ propres essais** directement dans le navigateur.
 
 - **Théorie** : pertes régulières (Darcy-Weisbach), pertes singulières (K·½ρV²),
   nombre de Reynolds et régimes d'écoulement, avec un mini-calculateur de Reynolds en direct.
+  Notions complémentaires (lois d'affinité des ventilateurs, puissance aéraulique, longueurs
+  équivalentes, coefficient de débit du Venturi) et un **diagramme de Moody interactif**
+  (λ = f(Re), échelle log) dont le point de fonctionnement suit le calculateur.
+- **Pistes d'étude & projets** : 9 sujets d'approfondissement réalisables sur le banc
+  (acquisition numérique, étalonnage Venturi, régulation PID, cartographie de vitesse, CFD…),
+  filtrables par niveau (débutant / intermédiaire / avancé).
 - **Composants** : présentation des éléments PVC, instrumentation et points de mesure (P1–P10),
   + une **galerie de photos du banc réel** (vue d'ensemble, coude, prise de pression, réduction,
   pompe Becker) avec visionneuse plein écran (lightbox, navigation clavier).

@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260624f" />
+  <link rel="stylesheet" href="css/style.css?v=20260624g" />
 </head>
 <body>
 
@@ -47,6 +47,7 @@
       <a href="#simulateur">Simulateur</a>
       <a href="#essais">Banc d'essai</a>
       <a href="#quiz">Quiz</a>
+      <a href="#projets">Pistes</a>
       <a href="#projet">Projet</a>
     </nav>
     <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" title="Thème clair / sombre">🌙</button>
@@ -237,6 +238,48 @@
         <div><span>Régime</span><b id="rxReg" class="pill">Turbulent</b></div>
         <div><span>λ (frottement)</span><b id="rxLam">0,0278</b></div>
       </div>
+    </div>
+
+    <!-- Notions complémentaires -->
+    <div class="section__sub" data-reveal>
+      <h3>Notions complémentaires</h3>
+      <p>Quatre concepts clés pour relier l'aéraulique à la partie électrotechnique du banc.</p>
+    </div>
+    <div class="grid grid--2">
+      <article class="card" data-reveal>
+        <h3>🌀 Lois des ventilateurs (affinité)</h3>
+        <p>Le variateur Altivar fait varier la fréquence <b>f</b> (donc la vitesse N de la pompe). Les grandeurs suivent les <strong>lois d'affinité</strong> :</p>
+        <div class="formula">Q ∝ N&nbsp;&nbsp;·&nbsp;&nbsp;ΔP ∝ N²&nbsp;&nbsp;·&nbsp;&nbsp;P ∝ N³</div>
+        <p class="muted">Doubler la fréquence double le débit, quadruple la perte de charge et multiplie par 8 la puissance absorbée : d'où l'intérêt énergétique de réduire la vitesse plutôt que d'étrangler une vanne.</p>
+      </article>
+      <article class="card" data-reveal data-reveal-delay="1">
+        <h3>⚡ Puissance aéraulique</h3>
+        <p>La puissance utile transmise à l'air relie directement ΔP et débit :</p>
+        <div class="formula">P<sub>aéraulique</sub> = ΔP × Q&nbsp;&nbsp;(W)</div>
+        <p class="muted">La puissance électrique absorbée par le moteur vaut P<sub>élec</sub> = P<sub>aéraulique</sub> / (η<sub>pompe</sub>·η<sub>variateur</sub>). Mesurer ΔP et Q permet donc d'estimer le rendement global de la chaîne Altivar + Becker.</p>
+      </article>
+      <article class="card" data-reveal>
+        <h3>📏 Méthode des longueurs équivalentes</h3>
+        <p>Une singularité (coude, vanne…) peut s'exprimer comme une <strong>longueur de tube droit</strong> qui provoquerait la même perte :</p>
+        <div class="formula">L<sub>éq</sub> = K · D / λ</div>
+        <p class="muted">On additionne les L<sub>éq</sub> à la longueur réelle pour obtenir une longueur totale, puis on applique Darcy-Weisbach une seule fois. Pratique pour dimensionner un réseau complet.</p>
+      </article>
+      <article class="card" data-reveal data-reveal-delay="1">
+        <h3>🧪 Débit par le tube Venturi</h3>
+        <p>Le Venturi déduit le débit de la dépression ΔP entre l'entrée (A₁) et le col (A₂), via Bernoulli :</p>
+        <div class="formula">Q = C<sub>d</sub> · A₂ · √( 2ΔP / (ρ(1−(A₂/A₁)²)) )</div>
+        <p class="muted">C<sub>d</sub> ≈ 0,97–0,98 pour un Venturi bien profilé (contre ≈ 0,6 pour un simple diaphragme). L'étalonnage consiste à déterminer ce C<sub>d</sub> expérimentalement.</p>
+      </article>
+    </div>
+
+    <!-- Diagramme de Moody -->
+    <div class="panel moody" data-reveal>
+      <div class="panel__head">
+        <h4>📉 Diagramme de Moody — λ = f(Re)</h4>
+        <span class="muted">le point suit le calculateur ci-dessus</span>
+      </div>
+      <canvas id="moodyCanvas" height="300"></canvas>
+      <p class="muted moody__note">Le coefficient de frottement λ décroît quand Re augmente. En régime laminaire il suit 64/Re ; en turbulent sur tube lisse (PVC), il suit la loi de Colebrook (≈ Blasius). La zone orange (2 300–4 000) est instable.</p>
     </div>
   </section>
 
@@ -526,10 +569,94 @@
     </div>
   </section>
 
-  <!-- ===================== PROJET ===================== -->
-  <section class="section" id="projet">
+  <!-- ===================== PISTES D'ÉTUDE / PROJETS ===================== -->
+  <section class="section" id="projets">
     <div class="section__head" data-reveal>
-      <span class="kicker">06 — À propos du projet</span>
+      <span class="kicker">06 — Pour aller plus loin</span>
+      <h2>Pistes d'étude &amp; projets</h2>
+      <p>Le banc est une base ouverte : voici des sujets d'approfondissement réalisables dessus,
+         du relevé simple au projet instrumenté. Filtrez par niveau.</p>
+    </div>
+
+    <div class="filters" id="projFilters" data-reveal>
+      <button type="button" class="filter active" data-lvl="all">Tous</button>
+      <button type="button" class="filter" data-lvl="debutant">Débutant</button>
+      <button type="button" class="filter" data-lvl="inter">Intermédiaire</button>
+      <button type="button" class="filter" data-lvl="avance">Avancé</button>
+    </div>
+
+    <div class="grid grid--cards" id="projGrid">
+      <article class="pcard" data-lvl="inter" data-reveal>
+        <div class="pcard__top"><span class="pcard__ico">📟</span><span class="lvl lvl--inter">Intermédiaire</span></div>
+        <h4>Acquisition numérique du ΔP</h4>
+        <p>Remplacer la lecture visuelle par un capteur MEMS de pression différentielle (0–500 Pa) relié à un Arduino / Raspberry Pi. Tracé automatique de ΔP = f(fréquence).</p>
+        <div class="pcard__tags"><span>Capteur MEMS</span><span>Arduino</span><span>Acquisition</span></div>
+      </article>
+
+      <article class="pcard" data-lvl="inter" data-reveal data-reveal-delay="1">
+        <div class="pcard__top"><span class="pcard__ico">🧪</span><span class="lvl lvl--inter">Intermédiaire</span></div>
+        <h4>Étalonnage du tube Venturi</h4>
+        <p>Établir la courbe débit ↔ ΔP du Venturi et déterminer son coefficient de décharge C<sub>d</sub>. Comparer au débit théorique de la pompe (lois d'affinité).</p>
+        <div class="pcard__tags"><span>Bernoulli</span><span>Débitmétrie</span><span>C_d</span></div>
+      </article>
+
+      <article class="pcard" data-lvl="debutant" data-reveal data-reveal-delay="2">
+        <div class="pcard__top"><span class="pcard__ico">📊</span><span class="lvl lvl--debutant">Débutant</span></div>
+        <h4>Blasius vs Colebrook vs Moody</h4>
+        <p>À partir des relevés, calculer λ expérimental et le comparer aux lois de Blasius, Colebrook et au diagramme de Moody. Quantifier les écarts et le domaine de validité.</p>
+        <div class="pcard__tags"><span>Traitement de données</span><span>Tableur</span></div>
+      </article>
+
+      <article class="pcard" data-lvl="avance" data-reveal>
+        <div class="pcard__top"><span class="pcard__ico">🎛️</span><span class="lvl lvl--avance">Avancé</span></div>
+        <h4>Régulation PID du débit</h4>
+        <p>Asservir le débit d'air à une consigne en pilotant l'Altivar 28 (entrée 0–10 V / Modbus) à partir de la mesure Venturi. Réglage et analyse d'un correcteur PID.</p>
+        <div class="pcard__tags"><span>Asservissement</span><span>Altivar</span><span>Modbus</span></div>
+      </article>
+
+      <article class="pcard" data-lvl="avance" data-reveal data-reveal-delay="1">
+        <div class="pcard__top"><span class="pcard__ico">🌬️</span><span class="lvl lvl--avance">Avancé</span></div>
+        <h4>Cartographie du profil de vitesse</h4>
+        <p>Relever le profil de vitesse dans une section avec un tube de Pitot ou un anémomètre à fil chaud. Comparer au profil turbulent théorique (loi en puissance 1/7).</p>
+        <div class="pcard__tags"><span>Pitot</span><span>Fil chaud</span><span>Profil turbulent</span></div>
+      </article>
+
+      <article class="pcard" data-lvl="inter" data-reveal data-reveal-delay="2">
+        <div class="pcard__top"><span class="pcard__ico">🔋</span><span class="lvl lvl--inter">Intermédiaire</span></div>
+        <h4>Bilan énergétique de la chaîne</h4>
+        <p>Mesurer la puissance électrique absorbée (pince wattmétrique) et la puissance aéraulique (ΔP × Q). En déduire le rendement global pompe + variateur selon la fréquence.</p>
+        <div class="pcard__tags"><span>Rendement</span><span>Wattmètre</span><span>Affinité</span></div>
+      </article>
+
+      <article class="pcard" data-lvl="debutant" data-reveal>
+        <div class="pcard__top"><span class="pcard__ico">🧯</span><span class="lvl lvl--debutant">Débutant</span></div>
+        <h4>Effet de l'encrassement</h4>
+        <p>Introduire une obstruction calibrée (grille, mousse) et suivre l'évolution du ΔP. Analogie avec l'encrassement d'un filtre en ventilation (maintenance prédictive).</p>
+        <div class="pcard__tags"><span>Filtration</span><span>Maintenance</span></div>
+      </article>
+
+      <article class="pcard" data-lvl="avance" data-reveal data-reveal-delay="1">
+        <div class="pcard__top"><span class="pcard__ico">💻</span><span class="lvl lvl--avance">Avancé</span></div>
+        <h4>Simulation CFD vs mesures</h4>
+        <p>Modéliser une portion du circuit (coude, réduction) sous OpenFOAM ou SimScale et confronter le ΔP simulé aux mesures du banc. Discussion du maillage et des modèles de turbulence.</p>
+        <div class="pcard__tags"><span>CFD</span><span>OpenFOAM</span><span>k-ε</span></div>
+      </article>
+
+      <article class="pcard" data-lvl="inter" data-reveal data-reveal-delay="2">
+        <div class="pcard__top"><span class="pcard__ico">🔊</span><span class="lvl lvl--inter">Intermédiaire</span></div>
+        <h4>Étude acoustique du réseau</h4>
+        <p>Mesurer le niveau sonore (sonomètre) en fonction du débit et repérer les singularités les plus bruyantes. Lien entre turbulence, vitesse d'air et confort acoustique.</p>
+        <div class="pcard__tags"><span>Acoustique</span><span>Sonomètre</span></div>
+      </article>
+    </div>
+
+    <p class="muted proj-empty" id="projEmpty" hidden>Aucune piste pour ce niveau.</p>
+  </section>
+
+  <!-- ===================== PROJET ===================== -->
+  <section class="section section--alt" id="projet">
+    <div class="section__head" data-reveal>
+      <span class="kicker">07 — À propos du projet</span>
       <h2>Le projet tutoré</h2>
     </div>
 
@@ -592,10 +719,10 @@
     <button class="btn btn--ghost" id="printBtn" type="button">🖨️ Imprimer / Exporter en PDF</button>
   </footer>
 
-  <script src="js/physics.js?v=20260624f"></script>
-  <script src="js/charts.js?v=20260624f"></script>
-  <script src="js/flow.js?v=20260624f"></script>
-  <script src="js/app.js?v=20260624f"></script>
+  <script src="js/physics.js?v=20260624g"></script>
+  <script src="js/charts.js?v=20260624g"></script>
+  <script src="js/flow.js?v=20260624g"></script>
+  <script src="js/app.js?v=20260624g"></script>
   <script>
     // Filet de sécurité : si le script principal n'a pas pu s'initialiser
     // (ex. ancien fichier en cache), on rend quand même tout le contenu visible.

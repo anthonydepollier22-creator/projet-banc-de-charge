@@ -241,5 +241,108 @@ const Charts = (() => {
     ctx.closePath();
   }
 
-  return { plotXY, plotStackedBar };
+  /* ----------------------- Diagramme de Moody (λ vs Re) ------------------ */
+  // Colebrook (tube lisse ε≈0) : 1/√λ = -2·log10(2,51/(Re·√λ))
+  function lambdaSmooth(Re) {
+    let l = 0.02;
+    for (let i = 0; i < 40; i++) {
+      const rhs = -2 * Math.log10(2.51 / (Re * Math.sqrt(l)));
+      l = 1 / (rhs * rhs);
+    }
+    return l;
+  }
+
+  // opts = { Re, lambda }  -> trace le diagramme de Moody avec le point courant
+  function plotMoody(canvas, opts) {
+    const { ctx, w, h } = setupCanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+    const COLORS = themeColors();
+    const cs = getComputedStyle(document.documentElement);
+    const cAccent = cs.getPropertyValue("--accent").trim() || "#2dd4bf";
+    const cAccent2 = cs.getPropertyValue("--accent-2").trim() || "#38bdf8";
+    const cWarn = "#ffb454";
+
+    const padL = 52, padR = 16, padT = 14, padB = 38;
+    const plotW = w - padL - padR, plotH = h - padT - padB;
+
+    // Échelles log : Re de 500 à 2e6, λ de 0,008 à 0,1
+    const reMin = 500, reMax = 2e6, laMin = 0.008, laMax = 0.1;
+    const lg = Math.log10;
+    const X = re => padL + (lg(re) - lg(reMin)) / (lg(reMax) - lg(reMin)) * plotW;
+    const Y = la => padT + plotH - (lg(la) - lg(laMin)) / (lg(laMax) - lg(laMin)) * plotH;
+
+    // Zone de transition 2300–4000
+    ctx.fillStyle = "rgba(255,180,84,0.10)";
+    ctx.fillRect(X(2300), padT, X(4000) - X(2300), plotH);
+
+    // Grille verticale (décades) + libellés
+    ctx.font = "10px Inter, system-ui, sans-serif";
+    ctx.fillStyle = COLORS.text;
+    [1e3, 1e4, 1e5, 1e6].forEach(re => {
+      const x = X(re);
+      ctx.strokeStyle = COLORS.grid;
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + plotH); ctx.stroke();
+      ctx.textAlign = "center"; ctx.textBaseline = "top";
+      ctx.fillText(re >= 1e6 ? "10⁶" : re >= 1e5 ? "10⁵" : re >= 1e4 ? "10⁴" : "10³", x, padT + plotH + 6);
+    });
+    // Grille horizontale
+    [0.01, 0.02, 0.03, 0.05, 0.08].forEach(la => {
+      const y = Y(la);
+      ctx.strokeStyle = COLORS.grid;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+      ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      ctx.fillStyle = COLORS.text;
+      ctx.fillText(la.toFixed(la < 0.03 ? 3 : 2), padL - 8, y);
+    });
+
+    // Axes
+    ctx.strokeStyle = COLORS.axis; ctx.lineWidth = 1.1;
+    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH); ctx.stroke();
+    ctx.fillStyle = COLORS.text; ctx.font = "11px Inter, system-ui, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+    ctx.fillText("Nombre de Reynolds  Re", padL + plotW / 2, h - 4);
+    ctx.save(); ctx.translate(12, padT + plotH / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText("λ (frottement)", 0, 0); ctx.restore();
+
+    // Courbe laminaire λ = 64/Re (Re 500 → 2300)
+    const drawCurve = (fn, reA, reB, color, dash) => {
+      ctx.strokeStyle = color; ctx.lineWidth = 2.4; ctx.setLineDash(dash || []);
+      ctx.shadowColor = hexA(color, .5); ctx.shadowBlur = dash ? 0 : 6;
+      ctx.beginPath();
+      let first = true;
+      for (let k = 0; k <= 120; k++) {
+        const re = reA * Math.pow(reB / reA, k / 120);
+        const la = fn(re);
+        if (la < laMin || la > laMax) { first = true; continue; }
+        const x = X(re), y = Y(la);
+        if (first) { ctx.moveTo(x, y); first = false; } else ctx.lineTo(x, y);
+      }
+      ctx.stroke(); ctx.setLineDash([]); ctx.shadowBlur = 0;
+    };
+    drawCurve(re => 64 / re, reMin, 2300, cAccent2);              // laminaire
+    drawCurve(lambdaSmooth, 4000, reMax, cAccent);                 // turbulent lisse
+
+    // Légende
+    ctx.font = "10px Inter, system-ui, sans-serif"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+    let ly = padT + 8;
+    const leg = (c, t) => { ctx.fillStyle = c; ctx.fillRect(padL + plotW - 150, ly - 1.5, 16, 3); ctx.fillStyle = COLORS.text; ctx.fillText(t, padL + plotW - 130, ly); ly += 15; };
+    leg(cAccent2, "Laminaire 64/Re");
+    leg(cAccent, "Turbulent (lisse)");
+    ctx.fillStyle = cWarn; ctx.fillText("▮ transition", padL + plotW - 150, ly);
+
+    // Point de fonctionnement
+    if (opts && opts.Re > 0 && opts.lambda > 0) {
+      const re = Math.max(reMin, Math.min(reMax, opts.Re));
+      const la = Math.max(laMin, Math.min(laMax, opts.lambda));
+      const x = X(re), y = Y(la);
+      ctx.save();
+      ctx.shadowColor = "rgba(255,255,255,.9)"; ctx.shadowBlur = 12;
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      ctx.strokeStyle = COLORS.axis; ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, padT + plotH); ctx.moveTo(x, y); ctx.lineTo(padL, y); ctx.stroke(); ctx.setLineDash([]);
+    }
+  }
+
+  return { plotXY, plotStackedBar, plotMoody };
 })();

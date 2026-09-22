@@ -35,6 +35,7 @@
     syncThemeIcon();
     // les graphes lisent les couleurs du thème : on les redessine
     try { updateSim(); } catch (e) {}
+    try { updateReynoldsMini(); } catch (e) {}
     try { if (lastEssai) drawEssaiChart(lastEssai.rows); } catch (e) {}
   });
 
@@ -52,6 +53,7 @@
     pill.style.background = reg.color + "22";
     pill.style.color = reg.color;
     $("rxLam").textContent = fmt(fr.lambda, 4);
+    try { Charts.plotMoody($("moodyCanvas"), { Re, lambda: fr.lambda }); } catch (e) {}
   }
   ["rxV", "rxD"].forEach(id => $(id).addEventListener("input", updateReynoldsMini));
 
@@ -408,6 +410,22 @@
       `<button class="btn btn--ghost" id="quizRestart">↻ Recommencer</button></div>`;
     $("quizRestart").addEventListener("click", () => { qIndex = 0; qScore = 0; renderQuiz(); });
   }
+
+  /* ====================== FILTRE DES PISTES / PROJETS ====================== */
+  const projFilters = [...document.querySelectorAll("#projFilters .filter")];
+  const projCards = [...document.querySelectorAll("#projGrid .pcard")];
+  const projEmpty = $("projEmpty");
+  projFilters.forEach(btn => btn.addEventListener("click", () => {
+    const lvl = btn.dataset.lvl;
+    projFilters.forEach(b => b.classList.toggle("active", b === btn));
+    let visible = 0;
+    projCards.forEach(c => {
+      const show = lvl === "all" || c.dataset.lvl === lvl;
+      c.classList.toggle("hide", !show);
+      if (show) visible++;
+    });
+    if (projEmpty) projEmpty.hidden = visible !== 0;
+  }));
 
   /* ====================== BOUTON RETOUR EN HAUT ====================== */
   const toTop = $("toTop");

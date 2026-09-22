@@ -545,8 +545,47 @@ canvas { width: 100%; display: block; }
 .quiz__result .big { font-family: 'Space Grotesk', sans-serif; font-size: 3rem; color: var(--accent); display: block; }
 .quiz__result p { color: var(--muted); margin: .4rem 0 1.2rem; }
 
-/* --------------------------- BOUTON RETOUR HAUT ------------------------ */
-.totop {
+/* --------------------- DIAGRAMME DE MOODY & NOTIONS -------------------- */
+.moody { margin-top: 1.8rem; }
+.moody__note { margin-top: .8rem; }
+
+/* --------------------- PISTES D'ÉTUDE / PROJETS ----------------------- */
+.filters { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.6rem; }
+.filter {
+  font-family: inherit; font-size: .85rem; font-weight: 600; cursor: pointer;
+  padding: .5rem .95rem; border-radius: 999px; color: var(--muted);
+  background: var(--inset); border: 1px solid var(--line);
+  transition: color .2s, border-color .2s, background .2s, transform .12s;
+}
+.filter:hover { color: var(--text); border-color: var(--accent); }
+.filter:active { transform: translateY(1px); }
+.filter.active { color: #04141a; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; }
+[data-theme="light"] .filter.active { color: #fff; }
+
+.pcard {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+  padding: 1.4rem; backdrop-filter: blur(10px); position: relative; overflow: hidden;
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+.pcard:hover { transform: translateY(-5px); border-color: rgba(45,212,191,.4); box-shadow: var(--glow); }
+.pcard__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+.pcard__ico { font-size: 1.8rem; }
+.pcard h4 { font-size: 1.1rem; margin-bottom: .4rem; }
+.pcard p { color: var(--muted); font-size: .9rem; }
+.pcard__tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .9rem; }
+.pcard__tags span {
+  font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: var(--accent-2);
+  background: rgba(56,189,248,.1); border: 1px solid var(--line-soft);
+  padding: .15rem .5rem; border-radius: 6px;
+}
+.lvl { font-size: .7rem; font-weight: 700; padding: .2rem .55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: .03em; }
+.lvl--debutant { background: rgba(45,212,191,.16); color: var(--accent); }
+.lvl--inter { background: rgba(255,180,84,.16); color: var(--warn); }
+.lvl--avance { background: rgba(255,92,122,.16); color: var(--danger); }
+.pcard.hide { display: none; }
+.proj-empty { text-align: center; padding: 1.5rem; }
+
+/* --------------------------- BOUTON RETOUR HAUT ------------------------ */.totop {
   position: fixed; right: 1.3rem; bottom: 1.3rem; z-index: 70;
   width: 46px; height: 46px; border-radius: 13px; cursor: pointer;
   background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #04141a;
@@ -595,8 +634,8 @@ canvas { width: 100%; display: block; }
   /* Éléments interactifs / décoratifs masqués */
   .nav, .progress, .totop, .theme-toggle, .nav__burger,
   .hero__aurora, .hero__grid, .orb, .hero__actions, .schematic,
-  .lightbox, .presets, .sim__controls, .essai__setup,
-  #flowCanvas, #curveCanvas, #barCanvas, #essaiCanvas, .quiz__bar,
+  .lightbox, .presets, .sim__controls, .essai__setup, .filters,
+  #flowCanvas, #curveCanvas, #barCanvas, #essaiCanvas, #moodyCanvas, .quiz__bar,
   #printBtn, .dot-live, #quiz, #simulateur .panel--flow {
     display: none !important;
   }
