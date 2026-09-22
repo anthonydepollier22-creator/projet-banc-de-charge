@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260625d" />
+  <link rel="stylesheet" href="css/style.css?v=20260625e" />
 </head>
 <body>
 
@@ -52,8 +52,8 @@
       <a href="#quiz">Quiz</a>
       <a href="#glossaire">Lexique</a>
     </nav>
-    <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" title="Thème clair / sombre">🌙</button>
-    <button class="nav__burger" id="burger" aria-label="Menu">☰</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" title="Thème clair / sombre" type="button">🌙</button>
+    <button class="nav__burger" id="burger" aria-label="Menu" type="button">☰</button>
   </header>
 
   <!-- ===================== HERO ===================== -->
@@ -234,8 +234,8 @@
         <div class="parcours__bar"><span id="parcoursBar"></span></div>
         <div class="parcours__meta">
           <span id="parcoursPct">0 %</span>
-          <button class="btn btn--primary btn--sm" id="parcoursResume">▶ Reprendre</button>
-          <button class="btn btn--ghost btn--sm" id="parcoursReset">Réinitialiser</button>
+          <button class="btn btn--primary btn--sm" id="parcoursResume" type="button">▶ Reprendre</button>
+          <button class="btn btn--ghost btn--sm" id="parcoursReset" type="button">Réinitialiser</button>
         </div>
       </div>
 
@@ -243,32 +243,32 @@
         <a class="pstep" href="#theorie" data-step="theorie">
           <span class="pstep__n">1</span>
           <span class="pstep__body"><b>Comprendre la théorie</b><span>Pertes, Reynolds, formules, analogie électrique</span></span>
-          <span class="pstep__check" title="Marquer comme fait">✓</span>
+          <span class="pstep__check" role="button" tabindex="0" aria-label="Marquer l'étape comme faite" title="Marquer comme fait">✓</span>
         </a>
         <a class="pstep" href="#composants" data-step="composants">
           <span class="pstep__n">2</span>
           <span class="pstep__body"><b>Découvrir le banc</b><span>Composants, instrumentation, photos réelles</span></span>
-          <span class="pstep__check" title="Marquer comme fait">✓</span>
+          <span class="pstep__check" role="button" tabindex="0" aria-label="Marquer l'étape comme faite" title="Marquer comme fait">✓</span>
         </a>
         <a class="pstep" href="#simulateur" data-step="simulateur">
           <span class="pstep__n">3</span>
           <span class="pstep__body"><b>Simuler le réseau</b><span>3 circuits, vannes, débit, ΔP en direct</span></span>
-          <span class="pstep__check" title="Marquer comme fait">✓</span>
+          <span class="pstep__check" role="button" tabindex="0" aria-label="Marquer l'étape comme faite" title="Marquer comme fait">✓</span>
         </a>
         <a class="pstep" href="#essais" data-step="essais">
           <span class="pstep__n">4</span>
           <span class="pstep__body"><b>Faire des essais</b><span>Protocole, mesures, courbe mesuré vs théorique</span></span>
-          <span class="pstep__check" title="Marquer comme fait">✓</span>
+          <span class="pstep__check" role="button" tabindex="0" aria-label="Marquer l'étape comme faite" title="Marquer comme fait">✓</span>
         </a>
         <a class="pstep" href="#exercices" data-step="exercices">
           <span class="pstep__n">5</span>
           <span class="pstep__body"><b>S'entraîner</b><span>Exercices auto-corrigés à valeurs aléatoires</span></span>
-          <span class="pstep__check" title="Marquer comme fait">✓</span>
+          <span class="pstep__check" role="button" tabindex="0" aria-label="Marquer l'étape comme faite" title="Marquer comme fait">✓</span>
         </a>
         <a class="pstep" href="#quiz" data-step="quiz">
           <span class="pstep__n">6</span>
           <span class="pstep__body"><b>Se tester</b><span>Quiz de 6 questions avec correction</span></span>
-          <span class="pstep__check" title="Marquer comme fait">✓</span>
+          <span class="pstep__check" role="button" tabindex="0" aria-label="Marquer l'étape comme faite" title="Marquer comme fait">✓</span>
         </a>
       </div>
     </div>
@@ -346,7 +346,7 @@
       <h4>🧮 Calculateur express de Reynolds</h4>
       <div class="mini__row">
         <label>Vitesse V (m/s)
-          <input type="range" id="rxV" min="0.5" max="20" step="0.5" value="5" />
+          <input type="range" id="rxV" min="0.5" max="20" step="0.5" value="5" aria-label="Vitesse de l'air en mètres par seconde" />
           <output id="rxVo">5,0</output>
         </label>
         <label>Diamètre
@@ -421,7 +421,7 @@
       <p class="muted moody__note">Ce graphique de référence donne le coefficient de frottement λ selon le régime. Plus l'air va vite (Re grand), plus λ diminue. À gauche (Re &lt; 2 300) : laminaire, λ = 64/Re. À droite : turbulent (cas du banc). La bande orange (2 300–4 000) est la zone instable de transition.</p>
     </div>
     <div class="lesson-done" data-reveal>
-      <button class="btn btn--done" data-step="theorie">✓ J'ai terminé cette étape</button>
+      <button class="btn btn--done" data-step="theorie" type="button">✓ J'ai terminé cette étape</button>
     </div>
   </section>
 
@@ -463,29 +463,29 @@
       <p class="muted">Photos du banc aéraulique monté sur mur. Cliquez pour agrandir.</p>
     </div>
     <div class="gallery" data-reveal>
-      <figure class="shot shot--feature" data-full="assets/img/banc-vue-ensemble.jpg">
+      <figure class="shot shot--feature" role="button" tabindex="0" data-full="assets/img/banc-vue-ensemble.jpg">
         <img src="assets/img/banc-vue-ensemble.jpg" alt="Vue d'ensemble du circuit PVC avec vannes boisseau" loading="lazy" />
         <figcaption><b>Vue d'ensemble</b> — 3 lignes PVC Ø50/Ø32, vannes à boisseau (levier rouge) et tés</figcaption>
       </figure>
-      <figure class="shot" data-full="assets/img/banc-coude.jpg">
+      <figure class="shot" role="button" tabindex="0" data-full="assets/img/banc-coude.jpg">
         <img src="assets/img/banc-coude.jpg" alt="Coude PVC 90° avec prise de pression et réduction" loading="lazy" />
         <figcaption><b>Coude 90°</b> — singularité + prise de pression, réduction en sortie</figcaption>
       </figure>
-      <figure class="shot" data-full="assets/img/banc-prise-pression.jpg">
+      <figure class="shot" role="button" tabindex="0" data-full="assets/img/banc-prise-pression.jpg">
         <img src="assets/img/banc-prise-pression.jpg" alt="Prise de pression : tube transparent collé dans le tube PVC" loading="lazy" />
         <figcaption><b>Prise de pression</b> — tuyau transparent collé (Interfix) dans le tube gris</figcaption>
       </figure>
-      <figure class="shot" data-full="assets/img/banc-reduction.jpg">
+      <figure class="shot" role="button" tabindex="0" data-full="assets/img/banc-reduction.jpg">
         <img src="assets/img/banc-reduction.jpg" alt="Réduction excentrée PVC Ø50/32" loading="lazy" />
         <figcaption><b>Réduction Ø50/32</b> — réduction excentrée FITT (passage Ø50 → Ø32)</figcaption>
       </figure>
-      <figure class="shot" data-full="assets/img/banc-pompe-becker.jpg">
+      <figure class="shot" role="button" tabindex="0" data-full="assets/img/banc-pompe-becker.jpg">
         <img src="assets/img/banc-pompe-becker.jpg" alt="Pompe / compresseur Becker à palettes" loading="lazy" />
         <figcaption><b>Pompe Becker</b> — compresseur à palettes, manchons silicone et caisson insonorisé</figcaption>
       </figure>
     </div>
     <div class="lesson-done" data-reveal>
-      <button class="btn btn--done" data-step="composants">✓ J'ai terminé cette étape</button>
+      <button class="btn btn--done" data-step="composants" type="button">✓ J'ai terminé cette étape</button>
     </div>
   </section>
 
@@ -507,12 +507,12 @@
             <span>Fréquence Altivar <span class="hint">(débit de la pompe)</span></span>
             <b><span id="vFreq">30</span> Hz</b>
           </div>
-          <input type="range" id="freq" min="10" max="50" step="1" value="30" />
+          <input type="range" id="freq" min="10" max="50" step="1" value="30" aria-label="Fréquence Altivar en hertz" />
         </div>
 
         <div class="ctrl">
           <div class="ctrl__label"><span>Vitesse de réf. à 50 Hz <span class="hint">(Ø50)</span></span><b><span id="vV50">10,0</span> m/s</b></div>
-          <input type="range" id="v50" min="3" max="18" step="0.5" value="10" />
+          <input type="range" id="v50" min="3" max="18" step="0.5" value="10" aria-label="Vitesse de référence à 50 Hz en mètres par seconde" />
         </div>
 
         <div class="ctrl__title">Les 3 vannes du banc</div>
@@ -529,7 +529,7 @@
           <div class="circ__top">
             <span class="circ__name">Ligne haute <i class="badge">Ø50</i></span>
             <label class="switch" title="Ouvrir / couper le circuit">
-              <input type="checkbox" id="c1Open" checked />
+              <input type="checkbox" id="c1Open" checked aria-label="Vanne de la ligne haute (Ø50) — ouverte ou coupée" />
               <span class="switch__track"><span class="switch__thumb"></span></span>
               <span class="switch__state" id="s1State">Ouverte</span>
             </label>
@@ -537,7 +537,7 @@
           <div class="circ__desc">Conduite principale 6 m · 2 coudes 90°</div>
           <div class="ctrl ctrl--sub circ__valve">
             <div class="ctrl__label"><span>Ouverture vanne</span><b><span id="v1Valve">100</span> %</b></div>
-            <input type="range" id="c1Valve" min="5" max="100" step="5" value="100" />
+            <input type="range" id="c1Valve" min="5" max="100" step="5" value="100" aria-label="Ouverture de la vanne — ligne haute (%)" />
           </div>
         </div>
 
@@ -546,7 +546,7 @@
           <div class="circ__top">
             <span class="circ__name">Ligne milieu <i class="badge">Ø50</i></span>
             <label class="switch" title="Ouvrir / couper le circuit">
-              <input type="checkbox" id="c2Open" checked />
+              <input type="checkbox" id="c2Open" checked aria-label="Vanne de la ligne milieu (Ø50) — ouverte ou coupée" />
               <span class="switch__track"><span class="switch__thumb"></span></span>
               <span class="switch__state" id="s2State">Ouverte</span>
             </label>
@@ -554,7 +554,7 @@
           <div class="circ__desc">Conduite 6 m · 1 coude · vanne boisseau</div>
           <div class="ctrl ctrl--sub circ__valve">
             <div class="ctrl__label"><span>Ouverture vanne</span><b><span id="v2Valve">100</span> %</b></div>
-            <input type="range" id="c2Valve" min="5" max="100" step="5" value="100" />
+            <input type="range" id="c2Valve" min="5" max="100" step="5" value="100" aria-label="Ouverture de la vanne — ligne milieu (%)" />
           </div>
         </div>
 
@@ -563,7 +563,7 @@
           <div class="circ__top">
             <span class="circ__name">Ligne basse <i class="badge badge--alt">Ø32</i></span>
             <label class="switch" title="Ouvrir / couper le circuit">
-              <input type="checkbox" id="c3Open" checked />
+              <input type="checkbox" id="c3Open" checked aria-label="Vanne de la ligne basse (Ø32) — ouverte ou coupée" />
               <span class="switch__track"><span class="switch__thumb"></span></span>
               <span class="switch__state" id="s3State">Ouverte</span>
             </label>
@@ -571,7 +571,7 @@
           <div class="circ__desc">Réduction Ø50→Ø32 · 3 m · vanne · Venturi</div>
           <div class="ctrl ctrl--sub circ__valve">
             <div class="ctrl__label"><span>Ouverture vanne</span><b><span id="v3Valve">100</span> %</b></div>
-            <input type="range" id="c3Valve" min="5" max="100" step="5" value="100" />
+            <input type="range" id="c3Valve" min="5" max="100" step="5" value="100" aria-label="Ouverture de la vanne — ligne basse (%)" />
           </div>
         </div>
       </div>
@@ -620,7 +620,7 @@
       </div>
     </div>
     <div class="lesson-done" data-reveal>
-      <button class="btn btn--done" data-step="simulateur">✓ J'ai terminé cette étape</button>
+      <button class="btn btn--done" data-step="simulateur" type="button">✓ J'ai terminé cette étape</button>
     </div>
   </section>
 
@@ -656,8 +656,8 @@
           </label>
         </div>
 
-        <button class="btn btn--primary btn--block" id="runEssai">▶&nbsp; Lancer l'essai</button>
-        <button class="btn btn--ghost btn--block" id="exportCsv" disabled>⬇&nbsp; Exporter en CSV</button>
+        <button class="btn btn--primary btn--block" id="runEssai" type="button">▶&nbsp; Lancer l'essai</button>
+        <button class="btn btn--ghost btn--block" id="exportCsv" disabled type="button">⬇&nbsp; Exporter en CSV</button>
 
         <div class="essai__verdict" id="verdict"></div>
       </div>
@@ -699,7 +699,7 @@
     </div>
 
     <div class="lesson-done" data-reveal>
-      <button class="btn btn--done" data-step="essais">✓ J'ai terminé cette étape</button>
+      <button class="btn btn--done" data-step="essais" type="button">✓ J'ai terminé cette étape</button>
     </div>
   </section>
 
@@ -733,18 +733,18 @@
         <label for="exInput">Votre réponse&nbsp;:</label>
         <input type="number" id="exInput" step="any" inputmode="decimal" placeholder="valeur" />
         <span class="ex-unit" id="exUnit"></span>
-        <button class="btn btn--primary" id="exCheck">Vérifier</button>
+        <button class="btn btn--primary" id="exCheck" type="button">Vérifier</button>
       </div>
       <div class="ex-feedback" id="exFeedback"></div>
       <div class="ex-solution" id="exSolution"></div>
       <div class="ex-foot">
-        <button class="btn btn--ghost" id="exSolutionBtn">💡 Voir la correction</button>
-        <button class="btn btn--ghost" id="exNext">🎲 Nouvel exercice</button>
+        <button class="btn btn--ghost" id="exSolutionBtn" type="button">💡 Voir la correction</button>
+        <button class="btn btn--ghost" id="exNext" type="button">🎲 Nouvel exercice</button>
       </div>
     </div>
 
     <div class="lesson-done" data-reveal>
-      <button class="btn btn--done" data-step="exercices">✓ J'ai terminé cette étape</button>
+      <button class="btn btn--done" data-step="exercices" type="button">✓ J'ai terminé cette étape</button>
     </div>
   </section>
 
@@ -765,12 +765,12 @@
       <div id="quizBody"><!-- généré par app.js --></div>
     </div>
     <div class="lesson-done" data-reveal>
-      <button class="btn btn--done" data-step="quiz">✓ J'ai terminé cette étape</button>
+      <button class="btn btn--done" data-step="quiz" type="button">✓ J'ai terminé cette étape</button>
     </div>
   </section>
 
   <!-- ===================== PISTES D'ÉTUDE / PROJETS ===================== -->
-  <section class="section" id="projets">
+  <section class="section" id="pistes">
     <div class="section__head" data-reveal>
       <span class="kicker">07 — Pour aller plus loin</span>
       <h2>Pistes d'étude &amp; projets</h2>
@@ -948,16 +948,16 @@
 
   <!-- Lightbox galerie -->
   <div class="lightbox" id="lightbox" aria-hidden="true">
-    <button class="lightbox__close" id="lightboxClose" aria-label="Fermer">✕</button>
-    <button class="lightbox__nav lightbox__prev" id="lightboxPrev" aria-label="Précédent">‹</button>
+    <button class="lightbox__close" id="lightboxClose" aria-label="Fermer" type="button">✕</button>
+    <button class="lightbox__nav lightbox__prev" id="lightboxPrev" aria-label="Précédent" type="button">‹</button>
     <figure class="lightbox__fig">
       <img id="lightboxImg" src="" alt="" />
       <figcaption id="lightboxCap"></figcaption>
     </figure>
-    <button class="lightbox__nav lightbox__next" id="lightboxNext" aria-label="Suivant">›</button>
+    <button class="lightbox__nav lightbox__next" id="lightboxNext" aria-label="Suivant" type="button">›</button>
   </div>
 
-  <button class="totop" id="toTop" aria-label="Revenir en haut">↑</button>
+  <button class="totop" id="toTop" aria-label="Revenir en haut" type="button">↑</button>
 
   <footer class="footer">
     <p>Banc à Perte de Charge — site interactif réalisé à partir des documents du projet tutoré.</p>
@@ -965,11 +965,11 @@
     <button class="btn btn--ghost" id="printBtn" type="button">🖨️ Imprimer / Exporter en PDF</button>
   </footer>
 
-  <script src="js/physics.js?v=20260625d"></script>
-  <script src="js/charts.js?v=20260625d"></script>
-  <script src="js/flow.js?v=20260625d"></script>
-  <script src="js/exercises.js?v=20260625d"></script>
-  <script src="js/app.js?v=20260625d"></script>
+  <script src="js/physics.js?v=20260625e"></script>
+  <script src="js/charts.js?v=20260625e"></script>
+  <script src="js/flow.js?v=20260625e"></script>
+  <script src="js/exercises.js?v=20260625e"></script>
+  <script src="js/app.js?v=20260625e"></script>
   <script>
     // Filet de sécurité : si le script principal n'a pas pu s'initialiser
     // (ex. ancien fichier en cache), on rend quand même tout le contenu visible.

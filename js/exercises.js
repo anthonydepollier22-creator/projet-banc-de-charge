@@ -144,7 +144,6 @@ const Exercises = (() => {
 
   // Tire un exercice au hasard (filtré par niveau : "all"|"debutant"|"inter"|"avance")
   function pickExercise(level = "all") {
-    const pool = GEN.filter(g => level === "all" || true); // filtre appliqué après génération
     for (let i = 0; i < 30; i++) {
       const ex = pick(GEN)();
       if (level === "all" || ex.level === level) return ex;

@@ -324,7 +324,10 @@
     lb.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
   }
-  shots.forEach((fig, i) => fig.addEventListener("click", () => openLightbox(i)));
+  shots.forEach((fig, i) => {
+    fig.addEventListener("click", () => openLightbox(i));
+    fig.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLightbox(i); } });
+  });
   $("lightboxClose")?.addEventListener("click", closeLightbox);
   $("lightboxPrev")?.addEventListener("click", () => openLightbox(lbIndex - 1));
   $("lightboxNext")?.addEventListener("click", () => openLightbox(lbIndex + 1));
@@ -473,10 +476,11 @@
   function markStep(id) { if (!doneSteps.has(id)) { doneSteps.add(id); saveProgress(); renderProgress(); } }
   function toggleStep(id) { doneSteps.has(id) ? doneSteps.delete(id) : doneSteps.add(id); saveProgress(); renderProgress(); }
   document.querySelectorAll(".btn--done").forEach(b => b.addEventListener("click", () => toggleStep(b.dataset.step)));
-  document.querySelectorAll(".pstep__check").forEach(chk => chk.addEventListener("click", e => {
-    e.preventDefault(); e.stopPropagation();
-    toggleStep(chk.closest(".pstep").dataset.step);
-  }));
+  document.querySelectorAll(".pstep__check").forEach(chk => {
+    const handler = e => { e.preventDefault(); e.stopPropagation(); toggleStep(chk.closest(".pstep").dataset.step); };
+    chk.addEventListener("click", handler);
+    chk.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") handler(e); });
+  });
   $("parcoursResume")?.addEventListener("click", () => {
     const next = PARCOURS_STEPS.find(s => !doneSteps.has(s)) || PARCOURS_STEPS[0];
     document.getElementById(next)?.scrollIntoView({ behavior: "smooth" });
