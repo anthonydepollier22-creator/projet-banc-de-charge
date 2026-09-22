@@ -10,9 +10,9 @@
   const fmt = (n, d = 0) =>
     n.toLocaleString("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d });
 
-  const COLOR_REG = "#2dd4bf";   // régulières
-  const COLOR_SING = "#38bdf8";  // singulières
-  const COLOR_THEO = "#2dd4bf";
+  const COLOR_REG = "#ef5f3c";   // régulières
+  const COLOR_SING = "#2d7ef7";  // singulières
+  const COLOR_THEO = "#ef5f3c";
   const COLOR_MEAS = "#ffb454";
 
   /* ====================== NAV MOBILE ====================== */
@@ -23,15 +23,15 @@
   /* ====================== BASCULE DE THÈME (clair / sombre) ============= */
   const themeBtn = $("themeToggle");
   function syncThemeIcon() {
-    const light = document.documentElement.dataset.theme === "light";
-    if (themeBtn) themeBtn.textContent = light ? "☀️" : "🌙";
+    const dark = document.documentElement.dataset.theme === "dark";
+    if (themeBtn) themeBtn.textContent = dark ? "☀️" : "🌙";
   }
   syncThemeIcon();
   themeBtn?.addEventListener("click", () => {
-    const light = document.documentElement.dataset.theme === "light";
-    if (light) { delete document.documentElement.dataset.theme; }
-    else { document.documentElement.dataset.theme = "light"; }
-    try { localStorage.setItem("theme", light ? "dark" : "light"); } catch (e) {}
+    const dark = document.documentElement.dataset.theme === "dark";
+    if (dark) { delete document.documentElement.dataset.theme; }
+    else { document.documentElement.dataset.theme = "dark"; }
+    try { localStorage.setItem("theme", dark ? "light" : "dark"); } catch (e) {}
     syncThemeIcon();
     // les graphes lisent les couleurs du thème : on les redessine
     try { updateSim(); } catch (e) {}
@@ -60,9 +60,9 @@
   /* ====================== SIMULATEUR — RÉSEAU 3 CIRCUITS ================ */
   // Propriétés fixes des 3 lignes du banc (l'utilisateur ne règle que la vanne)
   const CIRCUITS = [
-    { id: 1, name: "Ligne haute",  diameter: "D50", length: 6, elbows: 2, elbowK: 1.0, reduction: false, venturi: false, color: "#2dd4bf" },
-    { id: 2, name: "Ligne milieu", diameter: "D50", length: 6, elbows: 1, elbowK: 1.0, reduction: false, venturi: false, color: "#38bdf8" },
-    { id: 3, name: "Ligne basse",  diameter: "D32", length: 3, elbows: 1, elbowK: 1.0, reduction: true,  venturi: true,  color: "#818cf8" },
+    { id: 1, name: "Ligne haute",  diameter: "D50", length: 6, elbows: 2, elbowK: 1.0, reduction: false, venturi: false, color: "#ef5f3c" },
+    { id: 2, name: "Ligne milieu", diameter: "D50", length: 6, elbows: 1, elbowK: 1.0, reduction: false, venturi: false, color: "#2d7ef7" },
+    { id: 3, name: "Ligne basse",  diameter: "D32", length: 3, elbows: 1, elbowK: 1.0, reduction: true,  venturi: true,  color: "#12b3a6" },
   ];
 
   // Lit la configuration courante (réseau) depuis les contrôles
@@ -111,8 +111,8 @@
     Charts.plotStackedBar($("barCanvas"), parts.length ? parts : [{ label: "—", value: 1, color: "#334155" }]);
 
     $("dpSplit").innerHTML = r.allClosed
-      ? `<b style="color:#ff5c7a">⚠ Tous les circuits sont coupés — pas d'écoulement</b>`
-      : `ΔP commun aux lignes ouvertes : <b style="color:#2dd4bf">${fmt(r.dP, 1)} Pa</b>`;
+      ? `<b style="color:#e23b4e">⚠ Tous les circuits sont coupés — pas d'écoulement</b>`
+      : `ΔP commun aux lignes ouvertes : <b style="color:#ef5f3c">${fmt(r.dP, 1)} Pa</b>`;
 
     // détail par circuit
     const bd = $("breakdown");
@@ -126,7 +126,7 @@
       } else {
         li.style.opacity = ".55";
         li.innerHTML = `<span><i class="dot" style="background:#475569"></i>${c.name} (${diam})</span>` +
-          `<b style="color:#ff5c7a">✕ coupée</b>`;
+          `<b style="color:#e23b4e">✕ coupée</b>`;
       }
       bd.appendChild(li);
     });
@@ -426,6 +426,25 @@
     });
     if (projEmpty) projEmpty.hidden = visible !== 0;
   }));
+
+  /* ====================== RECHERCHE GLOSSAIRE ====================== */
+  const glossSearch = $("glossSearch");
+  const glossTerms = [...document.querySelectorAll("#glossList .gterm")];
+  const glossEmpty = $("glossEmpty");
+  const normalize = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  glossTerms.forEach(t => {
+    t.dataset.text = normalize((t.querySelector("b")?.textContent || "") + " " + (t.querySelector("span")?.textContent || ""));
+  });
+  glossSearch?.addEventListener("input", () => {
+    const q = normalize(glossSearch.value.trim());
+    let visible = 0;
+    glossTerms.forEach(t => {
+      const show = !q || t.dataset.text.includes(q);
+      t.classList.toggle("hide", !show);
+      if (show) visible++;
+    });
+    if (glossEmpty) glossEmpty.hidden = visible !== 0;
+  });
 
   /* ====================== BOUTON RETOUR EN HAUT ====================== */
   const toTop = $("toTop");

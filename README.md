@@ -33,8 +33,10 @@ propres essais** directement dans le navigateur.
   *mesuré vs théorique*, calcul de l'écart et **export CSV**.
 - **Quiz** : 6 questions à choix multiple avec correction instantanée, explications et score,
   pour réviser les pertes de charge et le fonctionnement du banc.
-- **Thème clair / sombre** : bascule dans la barre de navigation, mémorisée (localStorage) et
-  alignée par défaut sur la préférence du système ; graphiques et visualisation adaptatifs.
+- **Thème clair / sombre** : identité claire et chaleureuse par défaut (crème + corail / bleu /
+  vert d'eau), thème sombre optionnel ; bascule dans la barre de navigation, mémorisée et alignée
+  sur la préférence du système ; graphiques et visualisation adaptatifs.
+- **Glossaire** : tous les mots-clés du banc expliqués simplement, avec recherche instantanée.
 - **Impression / PDF** : bouton « Imprimer / Exporter en PDF » et feuille de style d'impression
   dédiée (document propre en noir sur blanc pour le dossier de projet).
 

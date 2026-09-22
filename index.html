@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Banc à Perte de Charge — Site interactif</title>
   <meta name="description" content="Site interactif sur les pertes de charge dans un circuit d'air sous pression : théorie, banc réel en photos, simulateur de réseau à 3 circuits et banc d'essai virtuel." />
-  <meta name="theme-color" content="#0a1018" />
+  <meta name="theme-color" content="#f7f4ec" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#14121b" media="(prefers-color-scheme: dark)" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <script>
     // Applique le thème enregistré avant le rendu (évite tout clignotement)
     (function () {
       try {
         var t = localStorage.getItem("theme");
-        if (!t) t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-        if (t === "light") document.documentElement.dataset.theme = "light";
+        if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        if (t === "dark") document.documentElement.dataset.theme = "dark";
       } catch (e) {}
     })();
   </script>
@@ -28,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260624h" />
+  <link rel="stylesheet" href="css/style.css?v=20260625a" />
 </head>
 <body>
 
@@ -49,6 +50,7 @@
       <a href="#quiz">Quiz</a>
       <a href="#projets">Pistes</a>
       <a href="#projet">Projet</a>
+      <a href="#glossaire">Lexique</a>
     </nav>
     <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" title="Thème clair / sombre">🌙</button>
     <button class="nav__burger" id="burger" aria-label="Menu">☰</button>
@@ -80,10 +82,10 @@
         <svg viewBox="0 0 900 300" preserveAspectRatio="xMidYMid meet">
           <defs>
             <linearGradient id="pipeGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#2dd4bf"/><stop offset="1" stop-color="#38bdf8"/>
+              <stop offset="0" stop-color="#ef5f3c"/><stop offset="1" stop-color="#2d7ef7"/>
             </linearGradient>
             <linearGradient id="flowGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#7dd3fc"/>
+              <stop offset="0" stop-color="#f6b8a5"/><stop offset="1" stop-color="#a9c9ff"/>
             </linearGradient>
             <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
@@ -92,9 +94,9 @@
           <g class="sch-pump" filter="url(#glow)">
             <circle cx="70" cy="150" r="40" fill="none" stroke="url(#pipeGrad)" stroke-width="4"/>
             <g class="sch-fan">
-              <path d="M70 150 L70 118 A32 32 0 0 1 97 166 Z" fill="#2dd4bf" opacity=".55"/>
-              <path d="M70 150 L97 166 A32 32 0 0 1 43 166 Z" fill="#38bdf8" opacity=".55"/>
-              <path d="M70 150 L43 166 A32 32 0 0 1 70 118 Z" fill="#5eead4" opacity=".55"/>
+              <path d="M70 150 L70 118 A32 32 0 0 1 97 166 Z" fill="#ef5f3c" opacity=".55"/>
+              <path d="M70 150 L97 166 A32 32 0 0 1 43 166 Z" fill="#2d7ef7" opacity=".55"/>
+              <path d="M70 150 L43 166 A32 32 0 0 1 70 118 Z" fill="#f6b8a5" opacity=".55"/>
             </g>
           </g>
           <text x="70" y="215" class="sch-label">Pompe Becker</text>
@@ -113,7 +115,7 @@
           </g>
 
           <!-- coude -->
-          <circle class="sch-node" cx="170" cy="60" r="9" fill="#2dd4bf"/>
+          <circle class="sch-node" cx="170" cy="60" r="9" fill="#ef5f3c"/>
           <text x="170" y="40" class="sch-label">Coude 90°</text>
 
           <!-- vanne (ligne du milieu) -->
@@ -124,18 +126,18 @@
           <text x="470" y="186" class="sch-label">Vanne</text>
 
           <!-- réduction (ligne basse) -->
-          <path d="M455 232 L485 236 L485 244 L455 248 Z" fill="#38bdf8" opacity=".8"/>
+          <path d="M455 232 L485 236 L485 244 L455 248 Z" fill="#2d7ef7" opacity=".8"/>
           <text x="470" y="272" class="sch-label">Ø50→Ø32</text>
 
           <!-- prises de pression -->
-          <g class="sch-taps" fill="#7dd3fc">
+          <g class="sch-taps" fill="#a9c9ff">
             <circle cx="300" cy="60" r="6"/><circle cx="360" cy="60" r="6"/>
             <circle cx="620" cy="150" r="6"/><circle cx="680" cy="150" r="6"/>
             <circle cx="620" cy="240" r="6"/><circle cx="680" cy="240" r="6"/>
           </g>
 
           <!-- Venturi (sortie ligne basse) -->
-          <path d="M770 232 L800 240 L770 248 Z" fill="#5eead4" opacity=".85"/>
+          <path d="M770 232 L800 240 L770 248 Z" fill="#f6b8a5" opacity=".85"/>
           <text x="788" y="272" class="sch-label">Venturi</text>
         </svg>
       </div>
@@ -720,6 +722,46 @@
     <p class="team" data-reveal>Équipe : <b>Martin Mulot · Sully Clain · Anthony Depollier · Enzo Tisne</b> — BTS Électrotechnique 2025–2026</p>
   </section>
 
+  <!-- ===================== GLOSSAIRE ===================== -->
+  <section class="section" id="glossaire">
+    <div class="section__head" data-reveal>
+      <span class="kicker">08 — Lexique</span>
+      <h2>Glossaire</h2>
+      <p>Tous les mots-clés du banc, expliqués simplement. Tapez un mot pour filtrer la liste.</p>
+    </div>
+
+    <div class="gloss-search" data-reveal>
+      <span class="gloss-search__ico">🔎</span>
+      <input type="search" id="glossSearch" placeholder="Rechercher un terme (ex. Reynolds, débit, vanne…)" aria-label="Rechercher un terme" />
+    </div>
+
+    <div class="gloss" id="glossList" data-reveal>
+      <div class="gterm"><b>Perte de charge</b><span>Baisse de pression de l'air le long du circuit, à cause des frottements et des obstacles. C'est l'énergie « perdue ».</span></div>
+      <div class="gterm"><b>Pertes régulières</b><span>Pertes dues au frottement de l'air sur les parois, tout au long des tubes droits.</span></div>
+      <div class="gterm"><b>Pertes singulières</b><span>Pertes provoquées par un accident local : coude, vanne, réduction, té…</span></div>
+      <div class="gterm"><b>Débit (Q)</b><span>Quantité d'air qui passe par seconde. En m³/s ou en m³/h (1 m³/s = 3 600 m³/h).</span></div>
+      <div class="gterm"><b>Vitesse (V)</b><span>Vitesse de l'air dans le tube, en mètres par seconde (m/s).</span></div>
+      <div class="gterm"><b>Pression dynamique</b><span>½·ρ·V² : la part de pression liée à la vitesse de l'air. Plus l'air va vite, plus elle est grande.</span></div>
+      <div class="gterm"><b>Nombre de Reynolds (Re)</b><span>Nombre sans unité qui dit si l'écoulement est calme (laminaire) ou agité (turbulent).</span></div>
+      <div class="gterm"><b>Régime laminaire</b><span>Écoulement ordonné, en filets parallèles. Re &lt; 2 300. Rare sur ce banc.</span></div>
+      <div class="gterm"><b>Régime turbulent</b><span>Écoulement agité, avec des tourbillons. Re &gt; 4 000. C'est le cas du banc.</span></div>
+      <div class="gterm"><b>Coefficient de frottement (λ)</b><span>Nombre qui mesure le frottement dans un tube droit. Dépend de Re et de l'état de la paroi.</span></div>
+      <div class="gterm"><b>Coefficient K</b><span>« Poids » d'une singularité (coude, vanne…). Plus K est grand, plus la perte est forte.</span></div>
+      <div class="gterm"><b>Darcy-Weisbach</b><span>Formule qui donne les pertes régulières : ΔP = λ·(L/D)·½ρV².</span></div>
+      <div class="gterm"><b>Blasius</b><span>Formule simple du frottement λ en turbulent sur tube lisse : λ = 0,316/Re^0,25.</span></div>
+      <div class="gterm"><b>Masse volumique (ρ)</b><span>Masse d'air contenue dans 1 m³. Pour l'air : environ 1,2 kg/m³.</span></div>
+      <div class="gterm"><b>Viscosité (ν)</b><span>« Résistance » de l'air à s'écouler. Pour l'air : environ 15·10⁻⁶ m²/s.</span></div>
+      <div class="gterm"><b>Tube Venturi</b><span>Rétrécissement progressif du tube : l'air accélère, la pression chute, ce qui permet de mesurer le débit.</span></div>
+      <div class="gterm"><b>Variateur (Altivar 28)</b><span>Appareil électrotechnique qui règle la fréquence (0–50 Hz), donc la vitesse de la pompe, donc le débit.</span></div>
+      <div class="gterm"><b>Pompe Becker</b><span>Compresseur à palettes qui met l'air en mouvement dans le circuit.</span></div>
+      <div class="gterm"><b>Vanne boisseau</b><span>Robinet à levier. Ouverte, elle laisse passer l'air ; fermée, elle coupe la ligne.</span></div>
+      <div class="gterm"><b>Prise de pression</b><span>Petit tube transparent branché sur la conduite pour lire la pression en un point.</span></div>
+      <div class="gterm"><b>Pascal (Pa)</b><span>Unité de pression. On utilise aussi le mmCE (colonne d'eau) et le mbar : 1 mbar = 100 Pa ≈ 10 mmCE.</span></div>
+      <div class="gterm"><b>Réseau en parallèle</b><span>Plusieurs lignes côte à côte, comme des résistances en parallèle : le débit se répartit entre elles.</span></div>
+    </div>
+    <p class="muted gloss-empty" id="glossEmpty" hidden>Aucun terme ne correspond à votre recherche.</p>
+  </section>
+
   </main>
 
   <!-- Lightbox galerie -->
@@ -741,10 +783,10 @@
     <button class="btn btn--ghost" id="printBtn" type="button">🖨️ Imprimer / Exporter en PDF</button>
   </footer>
 
-  <script src="js/physics.js?v=20260624h"></script>
-  <script src="js/charts.js?v=20260624h"></script>
-  <script src="js/flow.js?v=20260624h"></script>
-  <script src="js/app.js?v=20260624h"></script>
+  <script src="js/physics.js?v=20260625a"></script>
+  <script src="js/charts.js?v=20260625a"></script>
+  <script src="js/flow.js?v=20260625a"></script>
+  <script src="js/app.js?v=20260625a"></script>
   <script>
     // Filet de sécurité : si le script principal n'a pas pu s'initialiser
     // (ex. ancien fichier en cache), on rend quand même tout le contenu visible.

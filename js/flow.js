@@ -69,10 +69,11 @@ const Flow = (() => {
   }
 
   function dpColor(ratio) {
+    // faible ΔP -> bleu, moyen -> ambre, fort -> rouge
     const stops = [
-      { p: 0,   c: [45, 212, 191] },
-      { p: 0.5, c: [255, 180, 84] },
-      { p: 1,   c: [255, 92, 122] },
+      { p: 0,   c: [45, 126, 247] },
+      { p: 0.5, c: [242, 150, 15] },
+      { p: 1,   c: [226, 59, 78] },
     ];
     const r = Math.max(0, Math.min(1, ratio));
     let a = stops[0], b = stops[stops.length - 1];
@@ -130,20 +131,22 @@ const Flow = (() => {
 
   function drawPipe(cy, r, open) {
     ctx.save();
+    const light = document.documentElement.dataset.theme !== "dark";
     // remplissage intérieur
     const grad = ctx.createLinearGradient(0, cy - r, 0, cy + r);
     if (open) {
-      grad.addColorStop(0, "rgba(56,189,248,0.06)");
-      grad.addColorStop(0.5, "rgba(45,212,191,0.12)");
-      grad.addColorStop(1, "rgba(56,189,248,0.06)");
+      grad.addColorStop(0, "rgba(45,126,247,0.07)");
+      grad.addColorStop(0.5, "rgba(230,82,47,0.10)");
+      grad.addColorStop(1, "rgba(45,126,247,0.07)");
     } else {
-      grad.addColorStop(0, "rgba(120,140,160,0.05)");
-      grad.addColorStop(1, "rgba(120,140,160,0.05)");
+      grad.addColorStop(0, "rgba(120,130,150,0.06)");
+      grad.addColorStop(1, "rgba(120,130,150,0.06)");
     }
     ctx.fillStyle = grad;
     ctx.fillRect(0, cy - r, W, 2 * r);
     // parois
-    ctx.strokeStyle = open ? "rgba(125,211,252,0.55)" : "rgba(140,160,180,0.3)";
+    ctx.strokeStyle = open ? "rgba(45,126,247,0.55)"
+                           : (light ? "rgba(90,100,120,0.35)" : "rgba(180,190,205,0.3)");
     ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.moveTo(0, cy - r); ctx.lineTo(W, cy - r); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0, cy + r); ctx.lineTo(W, cy + r); ctx.stroke();
@@ -154,15 +157,16 @@ const Flow = (() => {
   function drawValve(x, cy, r, lane) {
     ctx.save();
     const closed = !lane.open;
+    const light = document.documentElement.dataset.theme !== "dark";
     // corps de la vanne
-    ctx.fillStyle = "rgba(14,22,34,0.95)";
-    ctx.strokeStyle = closed ? "#ff5c7a" : "#2dd4bf";
+    ctx.fillStyle = light ? "rgba(255,255,255,0.9)" : "rgba(20,18,30,0.95)";
+    ctx.strokeStyle = closed ? "#e23b4e" : "#e6522f";
     ctx.lineWidth = 2;
     const s = r * 0.9;
     roundRect(x - s, cy - s, 2 * s, 2 * s, 4);
     ctx.fill(); ctx.stroke();
     // poignée
-    ctx.strokeStyle = "#ff5c7a";
+    ctx.strokeStyle = "#e23b4e";
     ctx.lineWidth = 4;
     ctx.lineCap = "round";
     ctx.beginPath();
@@ -189,9 +193,9 @@ const Flow = (() => {
     ctx.font = "600 11px 'JetBrains Mono', monospace";
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
-    const light = document.documentElement.dataset.theme === "light";
-    const openColor = light ? "rgba(30,50,75,0.85)" : "rgba(226,238,245,0.85)";
-    ctx.fillStyle = lane.open ? openColor : "rgba(255,92,122,0.95)";
+    const light = document.documentElement.dataset.theme !== "dark";
+    const openColor = light ? "rgba(45,52,75,0.9)" : "rgba(240,236,230,0.85)";
+    ctx.fillStyle = lane.open ? openColor : "rgba(226,59,78,0.95)";
     const txt = lane.open ? `${lane.name}  ${lane.V.toFixed(1)} m/s` : `${lane.name}  — COUPÉE`;
     ctx.fillText(txt, 10, cy - r - 9);
   }

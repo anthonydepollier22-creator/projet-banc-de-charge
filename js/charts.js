@@ -258,8 +258,8 @@ const Charts = (() => {
     ctx.clearRect(0, 0, w, h);
     const COLORS = themeColors();
     const cs = getComputedStyle(document.documentElement);
-    const cAccent = cs.getPropertyValue("--accent").trim() || "#2dd4bf";
-    const cAccent2 = cs.getPropertyValue("--accent-2").trim() || "#38bdf8";
+    const cAccent = cs.getPropertyValue("--accent").trim() || "#e6522f";
+    const cAccent2 = cs.getPropertyValue("--accent-2").trim() || "#2d7ef7";
     const cWarn = "#ffb454";
 
     const padL = 52, padR = 16, padT = 14, padB = 38;
